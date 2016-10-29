@@ -72,7 +72,7 @@
 				},
 				render: function() {					
 					return (
-						<div class="wrapper">
+						<div>
 							<SearchForm onQuerySubmit={this.handleQuerySubmit}/>
 							<ResultList type="artists" results={this.state.artistResults}/>
 							<ResultList type="tracks" results={this.state.trackResults}/>
@@ -81,7 +81,36 @@
 					);
 				}
 			});
-			ReactDOM.render(React.createElement(SearchInterface, {url: "/search"}, "Hello World"), document.getElementById("content"));
+			var LoginModule = React.createClass({
+				getInitialState: function() {
+					return {
+						loginURL: "https://accounts.spotify.com/authorize/?client_id=2068662022c74a1697dcc0e4eeacf439&response_type=code&redirect_uri=http://localhost%3A3000%2FloggedIn&scope=user-read-private%20user-read-email&show_dialog=true"
+					};
+				},
+				handleLogin: function() {
+
+				},
+				render: function() {
+					return (
+						<div>
+							<a href={this.state.loginURL}>
+							log in
+							</a>
+						</div>
+					);
+				}
+			});
+			var AppWrapper = React.createClass({
+				render: function() {
+					return (
+						<div>
+							<LoginModule/>
+							<SearchInterface url="/search"/>
+						</div>
+					);
+				}
+			});
+			ReactDOM.render(React.createElement(AppWrapper, "Hello World"), document.getElementById("content"));
 		</script>
 	</body>
 </html>	

@@ -12,6 +12,16 @@ app.get('/search', function(req, res) {
 		});	
 	}
 });
+app.get('/loggedIn', function(req, res) {
+	console.log("received a request to loggedIn");
+	var error = req.query.error;
+	if(error) {
+		console.log(`/loggedIn came back with error: ${error}`);
+	}
+	var code = req.query.code;
+	var state = req.query.state;
+	Spotify.getToken(code, state);
+});
 
 app.use(express.static('public'));
 
