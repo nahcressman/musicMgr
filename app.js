@@ -26,6 +26,25 @@ app.get('/search', function(req, res) {
 			res.send(results);
 		});	
 	}
+	else {
+		res.setHeader("Content-Type", "application/json");
+		res.send({});
+	}
+});
+app.get('/searchByType', function(req, res) {
+	var queryText = req.query.q;
+	var searchType = req.query.searchType;
+	if(queryText) {
+		Spotify.searchByType(queryText, searchType, function(results) {
+			console.log("inside callback for /searchByType");
+			res.setHeader("Content-Type", "application/json");
+			res.send(results);
+		});	
+	}
+	else {
+		res.setHeader("Content-Type", "application/json");
+		res.send({});
+	}
 });
 app.get('/loggedIn', function(req, res) {
 	console.log("received a request to loggedIn");
@@ -49,7 +68,7 @@ app.get('/loggedIn', function(req, res) {
 	res.redirect('/');
 });
 
-app.use(express.static('public'));
+//app.use(express.static('public'));
 
 app.listen('3000', function() {
 	console.log('Running on port 3000');
