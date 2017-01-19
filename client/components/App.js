@@ -4,16 +4,13 @@ import React, { Component } from 'react';
 import LoginModule from './LoginModule';
 import SearchInterface from './SearchInterface';
 
-import '../css/App.css';
-
-const App = ({children}) => {
-	console.log("inside App, children is" + JSON.stringify({children}));
+const App = ({location}) => {
+	console.log("inside App, location is" + JSON.stringify({location}));
 
 	return (
 		<div>
 			<LoginModule/>
 			<SearchInterface/>
-			{children}
 		</div>
 	)
 }

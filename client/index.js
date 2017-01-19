@@ -8,8 +8,6 @@ import { createStore, applyMiddleware } from 'redux'
 import Root from './routes';
 import RootReducer from './reducers';
 
-import './index.css';
-
 //const loggerMiddleware = createLogger();
 
 let rootStore = createStore(

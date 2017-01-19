@@ -1,6 +1,18 @@
 var express = require("express");
 var sessions = require("client-sessions");
 var Spotify = require("./lib/spotify");
+var webpack = require("webpack");
+var webpackDevMiddleware = require('webpack-dev-middleware');
+var webpackHotMiddleware = require('webpack-hot-middleware');
+var historyApiFallback = require("connect-history-api-fallback");
+
+
+var config = require("./webpack.config.js");
+var compiler = webpack(config)
+var webpackInstance = webpackDevMiddleware(compiler, {
+	publicPath: config.output.publicPath,
+	stats: {colors: true}
+});
 
 var app = express();
 
@@ -68,7 +80,9 @@ app.get('/loggedIn', function(req, res) {
 	res.redirect('/');
 });
 
-//app.use(express.static('public'));
+app.use(webpackInstance);
+app.use(historyApiFallback());
+app.use(webpackInstance);
 
 app.listen('3000', function() {
 	console.log('Running on port 3000');

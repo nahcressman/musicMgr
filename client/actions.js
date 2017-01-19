@@ -24,7 +24,7 @@ export function doSpotifySearch(searchType, query) {
 		dispatch(requestFromSpotify(searchType, query));
 
 		rp({
-			uri: 'http://localhost:3001/searchByType',
+			uri: 'http://localhost:3000/searchByType',
 			qs: {q: query, searchType: searchType},
 			json: true
 		}).then(response => {

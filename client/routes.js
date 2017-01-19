@@ -11,7 +11,6 @@ const Root = ({store}) => (
 	<Provider store={store}>
 	  <Router history={browserHistory}>
 	    <Route path="/" component={App} />
-	    	<Route path="/spotifyLogin" component={SpotifyLogin} />
 	    <Route path="/about" component={About} />
 	    <Route path="*" component={NotFound} />
 	  </Router>
