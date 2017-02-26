@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import ResultList from './ResultList';
+import SearchResultList from './SearchResultList';
 
 const getResultsFromState = (resultSet) => resultSet ? resultSet.items : [];
 
@@ -10,6 +10,6 @@ const mapStateToProps = (state, ownProps) => {
 	}
 }
 
-const SpotifyResultList = connect(mapStateToProps)(ResultList);
+const SearchResultListContainer = connect(mapStateToProps)(SearchResultList);
 
-export default SpotifyResultList;
+export default SearchResultListContainer;

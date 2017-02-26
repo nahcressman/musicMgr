@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import App from './components/App';
 import About from './components/About';
 import NotFound from './components/NotFound';
-import SpotifyLogin from './components/SpotifyLogin';
 
 const Root = ({store}) => (
 	<Provider store={store}>

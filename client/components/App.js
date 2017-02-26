@@ -1,28 +1,17 @@
 // src/components/App/index.js
 import React, { Component } from 'react';
-//import classnames from 'classnames';
-import LoginModule from './LoginModule';
-import SearchInterface from './SearchInterface';
+import Navigation from './Navigation';
+import ContentViewContainer from './ContentViewContainer';
 
 const App = ({location}) => {
 	console.log("inside App, location is" + JSON.stringify({location}));
 
 	return (
 		<div>
-			<LoginModule/>
-			<SearchInterface/>
+			<Navigation/>
+			<ContentViewContainer/>
 		</div>
 	)
 }
 
-// class App extends Component {
-// 	render() {
-//         return (
-// 	    	<div>
-// 				<LoginModule/>
-// 	            <SearchInterface url="/search"/>
-// 	        </div>
-//         );
-// 	}
-// }
 export default App;

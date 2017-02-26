@@ -8,14 +8,14 @@ import { createStore, applyMiddleware } from 'redux'
 import Root from './routes';
 import RootReducer from './reducers';
 
-//const loggerMiddleware = createLogger();
+const loggerMiddleware = createLogger();
 
 let rootStore = createStore(
 	RootReducer,
 	{},
 	applyMiddleware(
-		thunkMiddleware
-//		loggerMiddleware
+		thunkMiddleware,
+		loggerMiddleware
 	)
 );
 

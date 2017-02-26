@@ -1,13 +1,11 @@
+var HtmlWebpackPlugin = require('html-webpack-plugin');
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
   context: __dirname + "/client",
-  entry: {
-  	javascript: "./index.js",
-  	html: "./index.html"
-  },
-
+  entry: './index.js',
   output: {
-    filename: "index.js",
+    filename: "[name].js",
     path: __dirname + "/dist",
   },
 
@@ -22,20 +20,34 @@ module.exports = {
 	}
   },
 
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: 'index.html'
+    }),
+    new ExtractTextPlugin({
+      filename: 'public/style.css',
+      allChunks: true
+    })
+  ],
+
   module: {
-  	loaders: [
-	  {
-	    test: /\.js$/,
-	    exclude: /node_modules/,
-	    loader: "babel-loader"
-	  },
-	  {
-	    test: /\.html$/,
-		loader: "file?name=[name].[ext]",
-	  },
-	  { 
-	  	test: /\.json$/, loader: "json-loader" 
-	  }
-	],
-  },
+  	rules: [
+  	  {
+  	    test: /\.js$/,
+        exclude: /node_modules/,
+        use: [
+          {
+  	         loader: "babel-loader"
+          }
+        ]
+  	  },
+      {
+        test: /\.scss$/,
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: ['css-loader', 'sass-loader']
+        })
+      }
+    ]
+  }
 }

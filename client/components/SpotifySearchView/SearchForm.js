@@ -1,5 +1,5 @@
 import React from 'react';
-import { doSpotifySearch } from '../actions';
+import { doSpotifySearch } from '../../actions';
 import { connect } from 'react-redux';
 
 let SearchForm = ( {dispatch} ) => { 

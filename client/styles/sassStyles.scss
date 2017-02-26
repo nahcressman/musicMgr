@@ -1,0 +1,33 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	#MyContentContainer {
+		display: flex;
+
+		.playlistSet {
+			width: 100%;
+		}
+	}
+
+	ul {
+		&.playlist-list {
+			list-style-type: none;
+			
+			li.playlist-container {
+				min-height: 44px;
+				list-style-position: outside;
+			}
+
+			li.playlist-container:nth-child(even) {
+				background: #eee;
+			}
+
+			li.playlist-container:nth-child(odd) {
+				background: #ccc;
+			}
+		}
+	}
+}
