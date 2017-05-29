@@ -24,7 +24,7 @@ var app = express();
 
 app.use(sessions({
 	cookieName: 'musicMgr', // cookie name dictates the key name added to the request object 
-	secret: '', // should be a large unguessable string 
+	
 	duration: 24 * 60 * 60 * 1000, // how long the session will stay valid in ms 
 }));
 
@@ -41,7 +41,11 @@ app.use(function(req,res,next) {
 	next();
 });
 
-app.get('/searchByType', function(req, res) {
+// We are going to fill these out in the sections to follow
+function handleRender(req, res) { /* ... */ }
+function renderFullPage(html, preloadedState) { /* ... */ }
+
+app.get('/api/searchByType', function(req, res) {
 	var queryText = req.query.q;
 	var searchType = req.query.searchType;
 	if(queryText) {
@@ -86,7 +90,7 @@ app.get('/loggedIn', function(req, res) {
 		}
 	});
 });
-app.get('/getPlaylists', function(req, res) {
+app.get('/api/getPlaylists', function(req, res) {
 	console.log("received a request to getPlaylists");
 	if(req.musicMgr && req.musicMgr.auth_token)
 	{
@@ -102,20 +106,20 @@ app.get('/getPlaylists', function(req, res) {
 		res.send({"error":"User Not Logged In"});
 	}
 });
-app.get('/logout', function(req, res) {
+app.get('/api/logout', function(req, res) {
 	console.log("received a request to logout");
 	if(req.musicMgr) {
 		req.musicMgr.reset();
 	}
 	res.status(200).send("");
 });
-app.get('/getUserDetails', function(req, res) {
+app.get('/api/getUserDetails', function(req, res) {
 	console.log("received a request to getUserDetails");
 	if(req.musicmgr) {
 		
 	}
 });
-app.get('/getPlaylistGenres', function(req, res) {
+app.get('/api/getPlaylistGenres', function(req, res) {
 	console.log("received a request to getPlaylistGenres");
 	if(!req.query.id) {
 		console.log('getPlaylistGenres: no playlist id was provided');
@@ -136,7 +140,7 @@ app.get('/getPlaylistGenres', function(req, res) {
 	}
 });
 
-app.get('/getPlaylistAudioFeatures', function(req, res) {
+app.get('/api/getPlaylistAudioFeatures', function(req, res) {
 	console.log("received a request to getPlaylistAudioFeatures");
 	if(!req.query.id) {
 		console.log('getPlaylistAudioFeatures: no playlist id was provided');
@@ -157,11 +161,11 @@ app.get('/getPlaylistAudioFeatures', function(req, res) {
 	}
 });
 
-app.use(webpackInstance);
-app.use(historyApiFallback());
-app.use(webpackInstance);
+// app.use(webpackInstance);
+// app.use(historyApiFallback());
+// app.use(webpackInstance);
 
-app.use(express.static('dist'));
+// app.use(express.static('dist'));
 
 app.listen('3000', function() {
 	console.log('Running on port 3000');

@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack-dev-server --progress --inline"
+    "start": "concurrently \"webpack-dev-server --progress --inline\"  \"node --inspect app\""
   },
   "repository": {
     "type": "git",
@@ -23,6 +23,7 @@
     "bluebird": "^3.4.7",
     "classnames": "^2.2.5",
     "client-sessions": "^0.7.0",
+    "concurrently": "^3.3.0",
     "express": "^4.14.0",
     "pg": "^6.1.0",
     "react": "^15.4.2",

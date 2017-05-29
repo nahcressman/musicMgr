@@ -14,10 +14,11 @@ module.exports = {
   },
 
   devServer: {
-  	contentBase: __dirname + "/dist",
-  	proxy: {
-	    "*" : "http://localhost:3000" // <- backend
-	}
+    	contentBase: __dirname + "/dist",
+    	proxy: {
+  	    "/api" : "http://localhost:3000", // <- backend
+        "/loggedIn" : "http://localhost:3000"
+  	}
   },
 
   plugins: [
