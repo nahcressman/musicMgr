@@ -2,34 +2,26 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
-  context: __dirname + "/client",
-  entry: './index.js',
+  context: __dirname,
+  entry: {
+    client_main: './client/app-client.js',
+    css: './client/styles/sassStyles.scss'
+  },
   output: {
     filename: "[name].js",
     path: __dirname + "/dist",
   },
+  devtool: 'eval-source-maps',
+  plugins: [
+    new ExtractTextPlugin({
+      filename: 'style.css',
+      allChunks: true
+    }),
+  ],
 
   node: {
-    fs: "empty"
+    fs: 'empty',
   },
-
-  devServer: {
-    	contentBase: __dirname + "/dist",
-    	proxy: {
-  	    "/api" : "http://localhost:3000", // <- backend
-        "/loggedIn" : "http://localhost:3000"
-  	}
-  },
-
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: 'index.html'
-    }),
-    new ExtractTextPlugin({
-      filename: 'public/style.css',
-      allChunks: true
-    })
-  ],
 
   module: {
   	rules: [

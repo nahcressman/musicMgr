@@ -1,7 +1,7 @@
 import React from 'react';
 import SearchForm from './SearchForm';
 import SearchResultListContainer from './SearchResultListContainer';
-import '../../styles/sassStyles.scss';
+//import '../../styles/sassStyles.scss';
 
 const SpotifySearchView = () => (
 	<div>

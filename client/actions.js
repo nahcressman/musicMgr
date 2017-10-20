@@ -37,7 +37,7 @@ export function doSpotifySearch(searchType, query) {
 		dispatch(requestFromSpotify(searchType, query));
 
 		rp({
-			uri: 'http://localhost:8080/api/searchByType',
+			uri: 'http://localhost:3000/api/searchByType',
 			qs: {q: query, searchType: searchType},
 			json: true
 		}).then(response => {
@@ -67,7 +67,7 @@ export function doSpotifyMyContent(contentType) {
 		dispatch(requestMyContent(contentType));
 
 		rp({
-			uri: 'http://localhost:8080/api/getPlaylists',
+			uri: 'http://localhost:3000/api/getPlaylists',
 			json: true
 		}).then(response => {
 			dispatch(receiveMyContent(contentType, {
@@ -101,7 +101,7 @@ export function doSpotifyLogout() {
 		dispatch(startSpotifyLogout());
 
 		rp({
-			uri: 'http://localhost:8080/logout'
+			uri: 'http://localhost:3000/api/logout'
 		}).then(response => {
 			dispatch(confirmSpotifyLogout());
 		})
@@ -152,7 +152,7 @@ export function doFetchPlaylistDetails(playlistId) {
 		dispatch(requestPlaylistFeatures(playlistId));
 
 		rp({
-			uri: 'http://localhost:8080/api/getPlaylistGenres',
+			uri: 'http://localhost:3000/api/getPlaylistGenres',
 			qs: {id: playlistId}
 		}).then(response => {
 			dispatch(receivePlaylistGenres(playlistId, JSON.parse(response)));
@@ -164,7 +164,7 @@ export function doFetchPlaylistDetails(playlistId) {
 		});
 
 		rp({
-			uri: 'http://localhost:8080/api/getPlaylistAudioFeatures',
+			uri: 'http://localhost:3000/api/getPlaylistAudioFeatures',
 			qs: {id: playlistId}
 		}).then(response => {
 			dispatch(receivePlaylistFeatures(playlistId, JSON.parse(response)));

@@ -1,13 +1,10 @@
-var express = require("express");
-var sessions = require("client-sessions");
-var historyApiFallback = require("connect-history-api-fallback");
-
-
+import express from 'express';
+import sessions from 'client-sessions';
+import historyApiFallback from 'connect-history-api-fallback';
 import path from 'path';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
-import MusicMgrApp from './client/components/MusicMgrApp';
-import AppRoot from './client/AppRoot';
+import AppRoot from '../client/AppRoot';
 import Spotify from './lib/spotify';
 
 var sendJSONResult = function(response, resultsToSend) {
@@ -24,7 +21,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(sessions({
 	cookieName: 'musicMgr', // cookie name dictates the key name added to the request object 
-	secret: 'wdjiV0U+|z}9eft488rlUY2O}8G6U7', // should be a large unguessable string 
+	secret: '', // should be a large unguessable string 
 	duration: 24 * 60 * 60 * 1000, // how long the session will stay valid in ms 
 }));
 
@@ -152,7 +149,7 @@ app.get('/api/getPlaylistAudioFeatures', function(req, res) {
 	}
 	else if(req.musicMgr && req.musicMgr.auth_token) {
 		Spotify.getPlaylistAudioFeatures(req.musicMgr.userId, req.query.id, req.musicMgr.auth_token, function (response) {
-			console.log('cal``l to getPlaylistAudioFeatures completing');
+			console.log('call to getPlaylistAudioFeatures completing');
 			res.status(response.status).send(response.results);
 		});
 	}
@@ -166,7 +163,7 @@ app.get('/api/getPlaylistAudioFeatures', function(req, res) {
 
 app.get('/', (returnq, res) => {
 	const markup = renderToString(<AppRoot />);
-	return res.render('index', { markup });
+	return res.render('index.ejs', { reactOutput: markup });
 });
 // app.use(webpackInstance);
 // app.use(historyApiFallback());
