@@ -1,11 +1,11 @@
 import express from 'express';
 import sessions from 'client-sessions';
-import historyApiFallback from 'connect-history-api-fallback';
 import path from 'path';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import AppRoot from '../client/AppRoot';
 import Spotify from './lib/spotify';
+import { StaticRouter } from 'react-router'
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -165,13 +165,15 @@ app.get('/api/getPlaylistAudioFeatures', function(req, res) {
 	}
 });
 
-app.get('/', (returnq, res) => {
-	const markup = renderToString(<AppRoot />);
+app.get('/', (req, res) => {
+	const context = {};
+	const markup = renderToString(
+		<StaticRouter location={req.url} context={context}>
+			<AppRoot />
+		</StaticRouter>
+	);
 	return res.render('index.ejs', { reactOutput: markup });
 });
-// app.use(webpackInstance);
-// app.use(historyApiFallback());
-// app.use(webpackInstance);
 
 app.use(express.static('dist'));
 

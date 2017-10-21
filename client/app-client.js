@@ -2,7 +2,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import AppRoot from './AppRoot';
+import { BrowserRouter } from 'react-router-dom';
 
 window.onload = () => {
-  ReactDOM.render(<AppRoot/>, document.getElementById('main'));
+  ReactDOM.render((
+  	<BrowserRouter>
+  		<AppRoot/>
+	</BrowserRouter>
+  ), document.getElementById('main'));
 };
