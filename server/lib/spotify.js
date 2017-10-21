@@ -1,6 +1,3 @@
-var https = require('https');
-var http = require('http');
-var path = require('path');
 var querystring = require('querystring');
 var fs = require('fs');
 var request = require('request');
@@ -23,8 +20,6 @@ var SPOTIFY_ACCOUNTS_BASE = 'accounts.spotify.com';
 var SPOTIFY_TOKEN_PATH = '/api/token';
 var SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
 var AUTH_REDIRECT_URI = 'http://localhost:3000/loggedIn';
-var CLIENT_ID = "2068662022c74a1697dcc0e4eeacf439";
-var CLIENT_SECRET = "48765fd774b4478c8e42268592bbe0e7";
 
 var TRACK_FEATURES = [
 	{
@@ -97,8 +92,8 @@ const Spotify = {
 				grant_type: "authorization_code",
 				code: authCode,
 				redirect_uri: AUTH_REDIRECT_URI,
-				client_id: CLIENT_ID,
-				client_secret: CLIENT_SECRET
+				client_id: process.env.MM_SPOTIFY_CLIENT_ID,
+				client_secret: process.env.MM_SPOTIFY_SECRET
 			}
 		},
 			function(error, response, body) {

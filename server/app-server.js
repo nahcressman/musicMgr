@@ -7,6 +7,9 @@ import { renderToString } from 'react-dom/server';
 import AppRoot from '../client/AppRoot';
 import Spotify from './lib/spotify';
 
+import dotenv from 'dotenv';
+dotenv.config();
+
 var sendJSONResult = function(response, resultsToSend) {
 	response.setHeader("Content-Type", "application/json");
 	response.send(resultsToSend != null ? resultsToSend : {});
@@ -15,13 +18,14 @@ var sendJSONResult = function(response, resultsToSend) {
 var app = express();
 var project_base_path = require('path').resolve(__dirname, '..')
 
-
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+console.log(process.env)
+
 app.use(sessions({
 	cookieName: 'musicMgr', // cookie name dictates the key name added to the request object 
-	secret: '', // should be a large unguessable string 
+	secret: process.env.MM_SESSION_SECRET, // should be a large unguessable string 
 	duration: 24 * 60 * 60 * 1000, // how long the session will stay valid in ms 
 }));
 
