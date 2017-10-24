@@ -8,10 +8,12 @@ var SPOTIFY_API_BASE = 'api.spotify.com';
 var SPOTIFY_SEARCH_ENDPOINT = '/v1/search';
 var SPOTIFY_ME_ENDPOINT = 'v1/me';
 var SPOTIFY_ME_URL = "https://api.spotify.com/v1/me";
+var SPOTIFY_CREATE_PLAYLIST_URL = 'https://api.spotify.com/v1/users/{user_id}/playlists';
 var SPOTIFY_PLAYLIST_URL = 'https://api.spotify.com/v1/users/{user_id}/playlists/{playlist_id}';
 var SPOTIFY_PLAYLIST_TRACKS_URL = 'https://api.spotify.com/v1/users/{user_id}/playlists/{playlist_id}/tracks';
 var SPOTIFY_ARTISTS_URL = 'https://api.spotify.com/v1/artists';
 var SPOTIFY_AUDIO_FEATURES_URL = 'https://api.spotify.com/v1/audio-features';
+var SPOTIFY_PLAYBACK_URL = 'https://api.spotify.com/v1/me/player';
 var ARTIST_TYPE = "artist";
 var TRACK_TYPE = "track";
 var ALBUM_TYPE = "album";
@@ -440,6 +442,74 @@ const Spotify = {
 		}).catch(reason => {
 			callback({status: reason.statusCode, results: {"error":"getting the playlist failed"}})
 		});	
+	},
+
+	getPlaybackDetails: (authToken) => {
+		return rp({
+			uri: SPOTIFY_PLAYBACK_URL,
+			headers: {
+				'Authorization': 'Bearer ' + authToken
+			}
+		});
+	},
+
+	getPlaylistDetails: (userId, playlistId, authToken) => {
+		let playlistUrl = SPOTIFY_PLAYLIST_URL.replace('{user_id}', userId).replace('{playlist_id}', '');
+		let playlistObject = undefined;
+		let playlistTracks = undefined;
+
+		return rp({
+			uri: playlistUrl,
+			headers: {
+				'Authorization': 'Bearer ' + authToken
+			}
+		}).then(response => {
+			let responseJSON = JSON.parse(response);
+			playlistObject = responseJSON.items.find( playlistObject => playlistObject.id === playlistId);
+
+			return rp({
+				uri: playlistObject.tracks.href,
+				headers: {
+					'Authorization': 'Bearer ' + authToken
+				}
+			});
+		}).then(response => {
+			let responseJSON = JSON.parse(response);
+			playlistTracks =  responseJSON;
+			return ({
+				playlist: playlistObject,
+				tracks: playlistTracks
+			});
+		});
+	},
+
+	getOnePlaylist: (userId, playlistId, authToken) => {
+		let playlistUrl = SPOTIFY_PLAYLIST_URL.replace('{user_id}', userId).replace('{playlist_id}', '');
+
+		return rp({
+			uri: playlistUrl,
+			headers: {
+				'Authorization': 'Bearer ' + authToken
+			},
+			json: true
+		});
+	},
+
+	createNewPlaylist: (userId, authToken, playlistName, description) => {
+		let createUrl = SPOTIFY_CREATE_PLAYLIST_URL.replace('{user_id}', userId);
+
+		return rp({
+			method: 'POST',
+			uri: createUrl,
+			body: {
+				name: playlistName,
+				description: description
+			},
+			headers: {
+				'Authorization': 'Bearer ' + authToken
+			},
+			json: true
+		});
 	}
 }
 

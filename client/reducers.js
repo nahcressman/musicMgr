@@ -11,6 +11,10 @@ const defaultSingleMyContentTypeState = {
 	items: []
 };
 
+const defaultLoginState = {
+	loggedIn: false
+}
+
 const defaultSpotifyMyContentState = {
 	loggedIn: false,
 	activeView: "ATTRIBUTE_VIEW",
@@ -33,6 +37,13 @@ const defaultPlaylistFeaturesState = {
 	isFetching: false,
 	features: null,
 	playlistName: null
+};
+
+
+const defaultDashboardState = {
+	isFetching: false,
+	activePlaylistId: undefined,
+	managedPlaylist: undefined
 };
 
 function spotifySearchByType(state = defaultSingleSearchTypeState, action) {
@@ -75,6 +86,17 @@ function spotifyMyContentByContentType(state = defaultSingleMyContentTypeState, 
 			return Object.assign({}, state, {
 				isFetching: false,
 				items: action.results
+			});
+		default:
+			return state;
+	}
+}
+
+function loginState(state = defaultLoginState, action) {
+	switch (action.type) {
+		case actionCreators.CONFIRM_SPOTIFY_LOGOUT:
+			return Object.assign({}, state, {
+				loggedIn: false
 			});
 		default:
 			return state;
@@ -154,9 +176,33 @@ function navigationState(state = 'SPOTIFY_SEARCH', action) {
 	}
 }
 
+function dashboardState(state = defaultDashboardState, action) {
+	switch (action.type) {
+		case actionCreators.ACTIVE_JUKEBOX_PLAYLIST_CHANGED:
+			return Object.assign({}, state, {
+				activePlaylistId: action.id
+			});
+		case actionCreators.REQUEST_MANAGED_PLAYLIST:
+		case actionCreators.REQUEST_CREATE_MANAGED_PLAYLIST:
+			return Object.assign({}, state, {
+				isFetching: true
+			});
+		case actionCreators.RECEIVE_MANAGED_PLAYLIST:
+		case actionCreators.RECEIVE_CREATE_MANAGED_PLAYLIST:
+			return Object.assign({}, state, {
+				isFetching: false,
+				managedPlaylist: action.playlist,
+			});
+		default:
+			return state;
+	}
+}
+
 const rootReducer = combineReducers({
+	dashboardState,
 	spotifySearch,
 	spotifyMyContent,
+	loginState,
 	navigationState,
 	playlistGenres,
 	playlistFeatures

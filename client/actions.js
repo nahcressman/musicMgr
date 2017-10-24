@@ -14,7 +14,11 @@ export const SET_NAVIGATION_STATE = 'SET_NAVIGATION_STATE';
 export const SET_ACTIVE_MY_CONTENT_VIEW = 'SET_ACTIVE_MY_CONTENT_VIEW';
 export const SET_ACTIVE_PLAYLIST_ID = 'SET_ACTIVE_PLAYLIST_ID';
 export const TOGGLE_GENRE_EXPAND = 'TOGGLE_GENRE_EXPAND';
-
+export const ACTIVE_JUKEBOX_PLAYLIST_CHANGED = 'ACTIVE_JUKEBOX_PLAYLIST_CHANGED';
+export const REQUEST_MANAGED_PLAYLIST = 'REQUEST_MANAGED_PLAYLIST';
+export const RECEIVE_MANAGED_PLAYLIST = 'RECEIVE_MANAGED_PLAYLIST';
+export const REQUEST_CREATE_MANAGED_PLAYLIST = 'REQUEST_CREATE_MANAGED_PLAYLIST';
+export const RECEIVE_CREATE_MANAGED_PLAYLIST = 'RECEIVE_CREATE_MANAGED_PLAYLIST';
 
 function requestFromSpotify(searchType, query) {
 	return { 
@@ -206,5 +210,66 @@ export function fetchPaneData(destinationPane) {
 			default:
 				return;
 		}
+	}
+}
+
+export function requestManagedPlaylist() {
+	return {
+		type: REQUEST_MANAGED_PLAYLIST,
+	}
+}
+
+export function receiveManagedPlaylist(json) {
+	return {
+		type: RECEIVE_MANAGED_PLAYLIST,
+		playlist: json
+	};
+}
+
+export function doFetchManagedPlaylist(playlistId) {
+	return (dispatch) => {
+		dispatch(requestManagedPlaylist());
+
+		rp({
+			uri: 'http://localhost:3000/api/getManagedPlaylist',
+		}).then( response => {
+			dispatch(receiveManagedPlaylist(JSON.parse(response)));
+		}).catch( error => {
+			dispatch(receiveManagedPlaylist(undefined));
+			if(error.statusCode === 401) {
+				dispatch(confirmSpotifyLogout());
+			}
+		});
+	};
+}
+
+export function requestCreateManagedPlaylist() {
+	return ({
+		type: REQUEST_CREATE_MANAGED_PLAYLIST
+	});
+}
+
+export function receiveCreateManagedPlaylist(playlist) {
+	return ({
+		type: RECEIVE_CREATE_MANAGED_PLAYLIST,
+		playlist: playlist
+	})
+}
+
+export function doCreateManagedPlaylist(playlistId) {
+	return (dispatch) => {
+		dispatch(requestCreateManagedPlaylist());
+
+		rp({
+			uri: 'http://localhost:3000/api/createManagedPlaylist',
+		}).then( response => {
+			dispatch(receiveCreateManagedPlaylist(JSON.parse(response)));
+		}).catch( error => {
+			console.log('doCreateManagedPlaylist error')
+			dispatch(receiveCreateManagedPlaylist(undefined));
+			if(error.statusCode === 401) {
+				dispatch(confirmSpotifyLogout());
+			}
+		});
 	}
 }

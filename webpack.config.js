@@ -22,11 +22,13 @@ module.exports = {
   node: {
     fs: 'empty',
   },
-
+  resolve: {
+    extensions: ['.js', '.jsx']
+  },
   module: {
   	rules: [
   	  {
-  	    test: /\.js$/,
+  	    test: /\.jsx?$/,
         exclude: /node_modules/,
         use: [
           {

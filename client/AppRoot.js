@@ -10,9 +10,11 @@ import RootReducer from './reducers';
 import MusicMgrApp from './components/MusicMgrApp';
 
 const loggerMiddleware = createLogger();
+const initialReduxState = typeof(window) !== 'undefined' ? JSON.parse(window.__REDUX_STATE__) : {};
 
 let rootStore = createStore(
 	RootReducer,
+	initialReduxState,
 	composeWithDevTools(
 		applyMiddleware(
 			thunkMiddleware,
