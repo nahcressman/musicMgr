@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import LoginModule from '../MyContentView/LoginModule';
 import { Link } from 'react-router-dom';
 import PlaybackStatusModule from './PlaybackStatusModule';
+import PlaylistUpdater from '../Common/PlaylistUpdater';
 
 class PlaylistManager extends Component {
 	componentDidMount() {
@@ -13,6 +14,23 @@ class PlaylistManager extends Component {
 		if (!managedPlaylist) {
 			fetchManagedPlaylist();
 		}
+	}
+
+	getIsPlayingStatus() {
+		return this.props.managedPlaylist &&
+			this.props.managedPlaylist.playbackDetails &&
+			this.props.managedPlaylist.playbackDetails.is_playing;
+	}
+
+	getUpcomingTracks() {
+		return this.props.managedPlaylist &&
+			this.props.managedPlaylist.upcomingTracks;
+	}
+
+	getCurrentPlayingTrack() {
+		return this.props.managedPlaylist &&
+			this.props.managedPlaylist.playbackDetails &&
+			this.props.managedPlaylist.playbackDetails.item.name
 	}
 
 	render() {
@@ -28,8 +46,19 @@ class PlaylistManager extends Component {
 				) : (
 					managedPlaylist ? (
 						<div>
-							<p>Currently using playlist named {managedPlaylist.spotifyPlaylistDetails.name}.</p>
-							<PlaybackStatusModule />
+							<PlaylistUpdater
+								managedPlaylist={managedPlaylist}
+							/>
+							<p>
+								Currently using playlist named {managedPlaylist.spotifyPlaylistDetails.name}.
+								Playlist id: {managedPlaylist.id.slice(0,4).toUpperCase()}
+							</p>
+
+							<PlaybackStatusModule 
+								isPlaying={this.getIsPlayingStatus()}
+								upcomingTracks={this.getUpcomingTracks()}
+								currentPlayingTrack={this.getCurrentPlayingTrack()}
+							/>
 						</div>
 					) : (
 						<div>

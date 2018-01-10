@@ -6,6 +6,7 @@ import {
 	Link
 } from 'react-router-dom';
 import DashboardContainer from './Dashboard/DashboardContainer';
+import ParticipantContainer from './Participant/ParticipantContainer';
 
 import Navigation from './Navigation';
 import ContentViewContainer from './ContentViewContainer';
@@ -21,6 +22,7 @@ const MusicMgrApp = () => {
 				</ul>
 			)}/>
 			<Route path="/dashboard" component={DashboardContainer} />
+			<Route path="/participant" component={ParticipantContainer} />
 		</div>
 	);
 };

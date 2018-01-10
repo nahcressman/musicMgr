@@ -19,6 +19,7 @@ export const REQUEST_MANAGED_PLAYLIST = 'REQUEST_MANAGED_PLAYLIST';
 export const RECEIVE_MANAGED_PLAYLIST = 'RECEIVE_MANAGED_PLAYLIST';
 export const REQUEST_CREATE_MANAGED_PLAYLIST = 'REQUEST_CREATE_MANAGED_PLAYLIST';
 export const RECEIVE_CREATE_MANAGED_PLAYLIST = 'RECEIVE_CREATE_MANAGED_PLAYLIST';
+export const RECEIVE_PLAYBACK_UPDATE_FROM_SERVER = 'RECEIVE_PLAYBACK_UPDATE_FROM_SERVER';
 
 function requestFromSpotify(searchType, query) {
 	return { 
@@ -272,4 +273,11 @@ export function doCreateManagedPlaylist(playlistId) {
 			}
 		});
 	}
+}
+
+export function receivePlaybackUpdateFromServer(updateData) {
+	return ({
+		type: RECEIVE_PLAYBACK_UPDATE_FROM_SERVER,
+		updateData: updateData
+	});
 }

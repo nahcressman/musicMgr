@@ -193,6 +193,10 @@ function dashboardState(state = defaultDashboardState, action) {
 				isFetching: false,
 				managedPlaylist: action.playlist,
 			});
+		case actionCreators.RECEIVE_PLAYBACK_UPDATE_FROM_SERVER:
+			return Object.assign({}, state, {
+				managedPlaylist: action.updateData
+			});
 		default:
 			return state;
 	}

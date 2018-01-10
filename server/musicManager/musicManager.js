@@ -4,14 +4,31 @@ import fs from 'fs';
 const CACHE_FILENAME = 'musicManagerCache.json';
 
 let dataCache = {};
-fs.readFile(CACHE_FILENAME, (err, data) => {
-	if (err) {
-		console.log('musicManager: ERROR READING CACHE: ' + err.toString());
-	} else {
-		dataCache = JSON.parse(data);
-		console.log('musicManager: Cache has been loaded from file');
-	}
-})
+let authTokens = {};
+let websocketClients = [];
+
+const managerWorkload = () => {
+	//TODO: next make this query the server once every couple of seconds to populate the current playing song, and the upcoming tracks on the list.
+	Object.keys(dataCache).forEach((key) => {
+		let dataCacheEntry = dataCache[key];
+		let authTokenEntry = authTokens[key];
+		if (authTokenEntry &&
+			authTokenEntry.expirationTime > new Date().getTime()) {
+			Spotify.getPlaybackDetails(authTokenEntry.auth_token).then( (playbackDetails) => {
+				dataCacheEntry.playbackDetails = playbackDetails;
+				if (playbackDetails.is_playing &&
+					playbackDetails.context &&
+					playbackDetails.context.type === 'playlist' &&
+					playbackDetails.context.uri === dataCacheEntry.spotifyPlaylistDetails.uri) {
+					Spotify.getGenericSpotifyUrl(dataCacheEntry.spotifyPlaylistDetails.tracks.href, authTokenEntry.auth_token).then( (trackResults) => {
+						let currentPlayingIndex = trackResults.items.findIndex( (item) => item.track.id === playbackDetails.item.id);
+						dataCacheEntry.upcomingTracks = trackResults.items.slice(currentPlayingIndex+1);
+					});
+				}
+			});
+		}
+	});
+};
 
 const dumpToCache = () => {
 	fs.writeFile(CACHE_FILENAME, JSON.stringify(dataCache), (err) => {
@@ -20,15 +37,16 @@ const dumpToCache = () => {
 	  };
 	  console.log('musicManager: Cache has been written');
 	});
-}
+};
 
 const PLAYLIST_NAME = 'JUKEBOX APP PLAYLIST';
 
 const DEFAULT_PLAYLIST = {
 	id: undefined,
-	upcomingSongs: [],
+	upcomingTracks: [],
 	spotifyPlaylistDetails: undefined,
 	spotifyUserId: undefined,
+	playbackDetails: undefined
 };
 
 //returns a promise with result of spotify playlist endpoint
@@ -52,6 +70,7 @@ const generateNewPlaylistEntry = (session) => {
 				spotifyUserId: session.userDetails.id,
 				spotifyPlaylistDetails: response
 			});
+			storeAuthTokensFromSession(session);
 			dumpToCache();
 			return dataCache[session.userDetails.id];
 		}).catch( (error) => {
@@ -60,8 +79,32 @@ const generateNewPlaylistEntry = (session) => {
 		})
 };
 
+const storeAuthTokensFromSession = (session) => {
+	if(session) {
+		authTokens[session.userDetails.id] = {
+			auth_token: session.auth_token,
+			refresh_token: session.refresh_token,
+			expirationTime: session.expirationTime
+		};
+	}
+}
+
+export const initializeMusicManager = () => {
+	fs.readFile(CACHE_FILENAME, (err, data) => {
+		if (err) {
+			console.log('musicManager: ERROR READING CACHE: ' + err.toString());
+		} else {
+			dataCache = JSON.parse(data);
+			console.log('musicManager: Cache has been loaded from file');
+		}
+	})
+
+	setInterval(managerWorkload, 5000);
+}
+
 //returns a promise indicating whether the user had a playlist or not
 export const createNewPlaylistForUser = (session) => {
+	storeAuthTokensFromSession(session);
 	//check if we are managing a playlist for the user
 	let existingPlaylist = dataCache[session.userDetails.id];
 	//verify that the playlist still exists, otherwise we need to make a new one
@@ -82,5 +125,50 @@ export const createNewPlaylistForUser = (session) => {
 
 //returns whether or not we are currently managing a playlist for the user
 export const getManagedPlaylistForUser = (session) => {
+	storeAuthTokensFromSession(session);
 	return dataCache[session.userDetails.id];
+};
+
+const getStatusUpdateForPlaylist = (playlist) => {
+	let cachedPlaylistData = dataCache[playlist.spotifyUserId];
+	return cachedPlaylistData ? cachedPlaylistData : undefined;
+
+};
+
+// {
+// 	type: 'STATUS_UPDATE',
+// 	playlist: this.props.managedPlaylist
+// }
+
+const messageHandler = (websocket, message) => {
+	if (message &&
+		message.data) {
+		let jsonData = JSON.parse(message.data);
+		switch (jsonData.type) {
+			case 'STATUS_UPDATE':
+				let cachedPlaylistData = getStatusUpdateForPlaylist(jsonData.playlist);
+				if (cachedPlaylistData) {
+					websocket.send(JSON.stringify(cachedPlaylistData));
+				} else {
+					websocket.send(JSON.stringify({
+						'error': 'could not find playlist data for this playlist'
+					}));
+				}
+				break;
+			default:
+				return;
+		}
+	}
 }
+
+export const registerNewClient = (websocket) => {
+	websocket.onclose = () => {
+		websocketClients = websocketClients.filter( (ws) => ws !== websocket );
+	};
+	websocket.onmessage = (message) => messageHandler(websocket, message);
+	websocketClients.push(websocket);
+};
+
+export const broadcastToClients = (message) => {
+	websocketClients.forEach( ws => ws.send(message) );
+};

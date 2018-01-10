@@ -109,7 +109,7 @@ const Spotify = {
 			  			console.log("refresh_token is " + results.refresh_token);
 			  		}
 			  		if(results.expires_in) {
-			  			expirationTime.setTime(expirationTime.getTime() + (results.expires_in * 1000));
+			  			expirationTime = new Date().getTime() + (results.expires_in * 1000);
 			  			console.log("expires at " + expirationTime);
 			  		}
 
@@ -450,7 +450,7 @@ const Spotify = {
 			headers: {
 				'Authorization': 'Bearer ' + authToken
 			}
-		});
+		}).then(response => JSON.parse(response));
 	},
 
 	getPlaylistDetails: (userId, playlistId, authToken) => {
@@ -505,6 +505,16 @@ const Spotify = {
 				name: playlistName,
 				description: description
 			},
+			headers: {
+				'Authorization': 'Bearer ' + authToken
+			},
+			json: true
+		});
+	},
+
+	getGenericSpotifyUrl: (url, authToken) => {
+		return rp({
+			uri: url,
 			headers: {
 				'Authorization': 'Bearer ' + authToken
 			},

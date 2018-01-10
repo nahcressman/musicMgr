@@ -9,7 +9,13 @@ import { StaticRouter } from 'react-router';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import RootReducer from '../client/reducers';
-import { getManagedPlaylistForUser, createNewPlaylistForUser } from './musicManager/musicManager';
+import { 
+	initializeMusicManager,
+	getManagedPlaylistForUser, 
+	createNewPlaylistForUser,
+	registerNewClient,
+	broadcastToClients } from './musicManager/musicManager';
+import expressWs from 'express-ws';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -20,12 +26,16 @@ var sendJSONResult = function(response, resultsToSend) {
 }
 
 var app = express();
+expressWs(app);
+
 var project_base_path = require('path').resolve(__dirname, '..')
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 console.log(process.env)
+
+initializeMusicManager();
 
 app.use(sessions({
 	cookieName: 'musicMgr', // cookie name dictates the key name added to the request object 
@@ -34,7 +44,9 @@ app.use(sessions({
 }));
 
 app.use(function(req,res,next) { 
-	if(req.musicMgr) {
+	if(req.musicMgr &&
+		req.musicMgr.userDetails &&
+		req.musicMgr.expirationTime) {
 		console.log("User has a previous session stored. id: " + req.musicMgr.userDetails.id);
 		var now = new Date();
 		if(req.musicMgr.expirationTime < now.getTime()) {
@@ -79,7 +91,11 @@ app.get('/loggedIn', function(req, res) {
 
 	Spotify.getToken(code, state, function (result, auth_token, refresh_token, expirationTime) {
 		if(result) {
-			req.musicMgr.auth_token = auth_token;
+			req.musicMgr = {
+				auth_token: auth_token,
+				refresh_token: refresh_token,
+				expirationTime: expirationTime
+			}
 			Spotify.getUserDetails(auth_token, function(details) {
 				if(details) {
 					req.musicMgr.userDetails = details;
@@ -243,6 +259,18 @@ app.get('/api/createManagedPlaylist', function(req, res) {
 		res.send({"error":"User Not Logged In"});
 	}
 });
+
+let wsConnection = null;
+
+app.ws('/ws/ping', (ws, req) => {	
+	registerNewClient(ws);
+});
+
+app.get('/api/broadcast', (req, res) => {
+	broadcastToClients("sending you a message");
+	res.status(200);
+	res.send({"status":"okay"});
+})
 
 app.use(express.static('dist'));
 
