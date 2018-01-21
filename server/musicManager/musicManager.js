@@ -14,17 +14,25 @@ const managerWorkload = () => {
 		let authTokenEntry = authTokens[key];
 		if (authTokenEntry &&
 			authTokenEntry.expirationTime > new Date().getTime()) {
-			Spotify.getPlaybackDetails(authTokenEntry.auth_token).then( (playbackDetails) => {
-				dataCacheEntry.playbackDetails = playbackDetails;
-				if (playbackDetails.is_playing &&
-					playbackDetails.context &&
-					playbackDetails.context.type === 'playlist' &&
-					playbackDetails.context.uri === dataCacheEntry.spotifyPlaylistDetails.uri) {
-					Spotify.getGenericSpotifyUrl(dataCacheEntry.spotifyPlaylistDetails.tracks.href, authTokenEntry.auth_token).then( (trackResults) => {
-						let currentPlayingIndex = trackResults.items.findIndex( (item) => item.track.id === playbackDetails.item.id);
-						dataCacheEntry.upcomingTracks = trackResults.items.slice(currentPlayingIndex+1);
-					});
-				}
+			//first make sure that the playlist exists, and get its current tracks
+			Spotify.getGenericSpotifyUrl(dataCacheEntry.spotifyPlaylistDetails.tracks.href, authTokenEntry.auth_token).then( (trackResults) => {
+				Spotify.getPlaybackDetails(authTokenEntry.auth_token).then( (playbackDetails) => {
+					dataCacheEntry.playbackDetails = playbackDetails;
+					if (playbackDetails.is_playing &&
+						playbackDetails.context &&
+						playbackDetails.context.type === 'playlist' &&
+						playbackDetails.context.uri === dataCacheEntry.spotifyPlaylistDetails.uri) {
+						Spotify.getGenericSpotifyUrl(dataCacheEntry.spotifyPlaylistDetails.tracks.href, authTokenEntry.auth_token).then( (trackResults) => {
+							let currentPlayingIndex = trackResults.items.findIndex( (item) => item.track.id === playbackDetails.item.id);
+							dataCacheEntry.upcomingTracks = trackResults.items.slice(currentPlayingIndex+1);
+						});
+					} else {
+						dataCacheEntry.upcomingTracks = [];
+						dataCacheEntry.playbackDetails = undefined;
+					}
+				}).catch((error) => {
+					console.log('do something here');
+				});
 			});
 		}
 	});
@@ -80,7 +88,8 @@ const generateNewPlaylistEntry = (session) => {
 };
 
 const storeAuthTokensFromSession = (session) => {
-	if(session) {
+	if( session &&
+		session.userDetails) {
 		authTokens[session.userDetails.id] = {
 			auth_token: session.auth_token,
 			refresh_token: session.refresh_token,
@@ -94,8 +103,13 @@ export const initializeMusicManager = () => {
 		if (err) {
 			console.log('musicManager: ERROR READING CACHE: ' + err.toString());
 		} else {
-			dataCache = JSON.parse(data);
-			console.log('musicManager: Cache has been loaded from file');
+			try {
+				dataCache = JSON.parse(data);
+				console.log('musicManager: Cache has been loaded from file');
+			} catch (e) {
+				dataCache = {};
+				console.log('musicManager: Could not parse contents of cache, starting over');
+			}
 		}
 	})
 
@@ -126,8 +140,19 @@ export const createNewPlaylistForUser = (session) => {
 //returns whether or not we are currently managing a playlist for the user
 export const getManagedPlaylistForUser = (session) => {
 	storeAuthTokensFromSession(session);
-	return dataCache[session.userDetails.id];
+
+	return session.userDetails &&
+			dataCache[session.userDetails.id];
+
 };
+
+//checks whether we have a playlist in the cache for a specific id
+export const getManagedPlaylistById = (id) => {
+	if(typeof id === 'string' &&
+		id.length === 4) {
+		return Object.values(dataCache).find( (cacheEntry) => cacheEntry.id.toUpperCase().startsWith(id) );
+	}
+}
 
 const getStatusUpdateForPlaylist = (playlist) => {
 	let cachedPlaylistData = dataCache[playlist.spotifyUserId];
@@ -172,3 +197,26 @@ export const registerNewClient = (websocket) => {
 export const broadcastToClients = (message) => {
 	websocketClients.forEach( ws => ws.send(message) );
 };
+
+export const addSongToPlaylist = (playlistId, songURI) => {
+	//addSongToPlaylist: (userId, authToken, playlistId, songURI) => {
+
+	let userId = null,
+		authToken = null,
+		spotifyPlaylistId = null;
+
+	Object.keys(dataCache).forEach( (userIdKey) => {
+		if(dataCache[userIdKey].id === playlistId) {
+			userId = userIdKey;
+			authToken = authTokens[userIdKey].auth_token;
+			spotifyPlaylistId = dataCache[userIdKey].spotifyPlaylistDetails.id;
+		}
+	});
+	if(!userId) {
+		return Promise.reject({'error': 'The playlist data could not be found'});
+	} else if (!authToken) {
+		return Promise.reject({'error': 'Unauthorized. Playlist owner should re-host'});
+	} else {
+		return Spotify.addSongToPlaylist(userId, authToken, spotifyPlaylistId, songURI);
+	}
+}

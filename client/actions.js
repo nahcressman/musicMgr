@@ -20,6 +20,9 @@ export const RECEIVE_MANAGED_PLAYLIST = 'RECEIVE_MANAGED_PLAYLIST';
 export const REQUEST_CREATE_MANAGED_PLAYLIST = 'REQUEST_CREATE_MANAGED_PLAYLIST';
 export const RECEIVE_CREATE_MANAGED_PLAYLIST = 'RECEIVE_CREATE_MANAGED_PLAYLIST';
 export const RECEIVE_PLAYBACK_UPDATE_FROM_SERVER = 'RECEIVE_PLAYBACK_UPDATE_FROM_SERVER';
+export const WEBSOCKET_OPEN = 'WEBSOCKET_OPEN';
+export const SUBMIT_SONG_REQUEST = 'SUBMIT_SONG_REQUEST';
+export const COMPLETE_SONG_REQUEST = 'COMPLETE_SONG_REQUEST';
 
 function requestFromSpotify(searchType, query) {
 	return { 
@@ -233,6 +236,9 @@ export function doFetchManagedPlaylist(playlistId) {
 
 		rp({
 			uri: 'http://localhost:3000/api/getManagedPlaylist',
+			qs: {
+				id: playlistId
+			}
 		}).then( response => {
 			dispatch(receiveManagedPlaylist(JSON.parse(response)));
 		}).catch( error => {
@@ -280,4 +286,43 @@ export function receivePlaybackUpdateFromServer(updateData) {
 		type: RECEIVE_PLAYBACK_UPDATE_FROM_SERVER,
 		updateData: updateData
 	});
+}
+
+export function webSocketOpen(websocket) {
+	return ({
+		type: WEBSOCKET_OPEN,
+		websocket: websocket
+	});
+}
+
+export function submitSongRequest(id) {
+	return ({
+		type: SUBMIT_SONG_REQUEST,
+		id: id
+	});
+}
+
+export function completeSongRequest() {
+	return ({
+		type: COMPLETE_SONG_REQUEST,
+		id: id
+	});
+}
+
+export function doSongRequest(playlistId, songURI) {
+	return (dispatch) => {
+		dispatch(submitSongRequest(songURI));
+
+		rp({
+			uri: 'http://localhost:3000/api/songRequest',
+			qs: {
+				playlistId: playlistId,
+				songURI: songURI
+			}
+		}).then( response => {
+			dispatch(completeSongRequest());
+		}).catch( error => {
+			console.log(`doSongRequest error: ${error}`);
+		});
+	}
 }

@@ -14,6 +14,8 @@ var SPOTIFY_PLAYLIST_TRACKS_URL = 'https://api.spotify.com/v1/users/{user_id}/pl
 var SPOTIFY_ARTISTS_URL = 'https://api.spotify.com/v1/artists';
 var SPOTIFY_AUDIO_FEATURES_URL = 'https://api.spotify.com/v1/audio-features';
 var SPOTIFY_PLAYBACK_URL = 'https://api.spotify.com/v1/me/player';
+var SPOTIFY_ADD_SONG_TO_PLAYLIST_URL = 'https://api.spotify.com/v1/users/{user_id}/playlists/{playlist_id}/tracks';
+
 var ARTIST_TYPE = "artist";
 var TRACK_TYPE = "track";
 var ALBUM_TYPE = "album";
@@ -172,13 +174,7 @@ const Spotify = {
 
 					if(resultSet) {
 						console.log("parsing through resultSet: " + resultSet.toString())
-						returnList = resultSet.items.map( function(result) {
-							return {
-								id: result.id,
-								name: result.name,
-								popularity: result.popularity
-							};
-						});			
+						returnList = resultSet.items;
 					}
 
 					console.log("searchByType: sending data back to callback");
@@ -515,6 +511,24 @@ const Spotify = {
 	getGenericSpotifyUrl: (url, authToken) => {
 		return rp({
 			uri: url,
+			headers: {
+				'Authorization': 'Bearer ' + authToken
+			},
+			json: true
+		});
+	},
+
+//'https://api.spotify.com/v1/users/{user_id}/playlists/{playlist_id}/tracks';
+	addSongToPlaylist: (userId, authToken, playlistId, songURI) => {
+		let addURL = SPOTIFY_ADD_SONG_TO_PLAYLIST_URL.replace('{user_id}', userId)
+			.replace('{playlist_id}', playlistId);
+
+		return rp({
+			method: 'POST',
+			uri: addURL,
+			body: {
+				uris: [songURI]
+			},
 			headers: {
 				'Authorization': 'Bearer ' + authToken
 			},

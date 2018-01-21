@@ -6,7 +6,7 @@ import {
 	Link
 } from 'react-router-dom';
 import DashboardContainer from './Dashboard/DashboardContainer';
-import ParticipantContainer from './Participant/ParticipantContainer';
+import ParticipantViewContainer from './Participant/ParticipantViewContainer';
 
 import Navigation from './Navigation';
 import ContentViewContainer from './ContentViewContainer';
@@ -14,15 +14,19 @@ import ContentViewContainer from './ContentViewContainer';
 const MusicMgrApp = () => {
 	return (
 		<div className="app-content">
-			<h1>Spotify Jukebox</h1>
+			<header><Link className="nav-link" to="/">Spotify Jukebox</Link></header>
 			<Route exact path="/" render={props => (
-				<ul>
-					<li><Link to="/dashboard">Manage Your Jukebox</Link></li>
-					<li><Link to="/participant">Join an existing session</Link></li>
-				</ul>
-			)}/>
+				<div className="home-nav">
+					<div className="nav-section">	
+						<button className="nav-link-container"><Link className="nav-link" to="/dashboard">Host a jukebox</Link></button>
+					</div>
+					<div className="nav-section">
+						<button className="nav-link-container"><Link className="nav-link" to="/participant">Join an existing jukebox</Link></button>
+					</div>
+				</div>
+			)} />
 			<Route path="/dashboard" component={DashboardContainer} />
-			<Route path="/participant" component={ParticipantContainer} />
+			<Route path="/participant" component={ParticipantViewContainer} />
 		</div>
 	);
 };

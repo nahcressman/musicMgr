@@ -11,10 +11,12 @@ import { Provider } from 'react-redux';
 import RootReducer from '../client/reducers';
 import { 
 	initializeMusicManager,
-	getManagedPlaylistForUser, 
+	getManagedPlaylistForUser,
+	getManagedPlaylistById,
 	createNewPlaylistForUser,
 	registerNewClient,
-	broadcastToClients } from './musicManager/musicManager';
+	broadcastToClients,
+	addSongToPlaylist } from './musicManager/musicManager';
 import expressWs from 'express-ws';
 
 import dotenv from 'dotenv';
@@ -232,6 +234,16 @@ app.get('/api/getDashboardContent', function(req, res) {
 
 app.get('/api/getManagedPlaylist', function(req, res) {
 	console.log('Received a request to getManagedPlaylist endpoint');
+	if(req.query.id) {
+		let playlist = getManagedPlaylistById(req.query.id);
+		if (playlist) {
+			res.status(200);
+			res.send(playlist);
+		} else {
+			res.status(404);
+			res.send({"error":`Could not find playlist matching id ${req.query.id}`})
+		}
+	}
 	if(req.musicMgr && req.musicMgr.userDetails) {
 		res.status(200);
 		res.send(getManagedPlaylistForUser(req.musicMgr));
@@ -245,7 +257,6 @@ app.get('/api/getManagedPlaylist', function(req, res) {
 app.get('/api/createManagedPlaylist', function(req, res) {
 	console.log('Received a request to createManagedPlaylist endpoint');
 	if(req.musicMgr && req.musicMgr.userDetails.id) {
-		debugger;
 		createNewPlaylistForUser(req.musicMgr)
 			.then((response) => {
 				res.status(200).send(response);
@@ -272,13 +283,36 @@ app.get('/api/broadcast', (req, res) => {
 	res.send({"status":"okay"});
 })
 
+app.get('/api/songRequest', (req, res) => {
+	console.log('received a request to songRequest');
+	if(!req.query.playlistId) {
+		res.status(400);
+		res.send({'error': 'no playlistId query parameter provided'});
+	} else if (!req.query.songURI) {
+		res.status(400);
+		res.send({'error': 'no songId query parameter provided'});
+	} else {
+		addSongToPlaylist(req.query.playlistId, req.query.songURI).then((result) => {
+			res.status(200);
+			res.send(result)
+		}).catch(error => {
+			res.status(error.status_code);
+			res.send(error);
+		});
+	}
+})
+
 app.use(express.static('dist'));
 
 app.get('/*', (req, res) => {
 	const context = {};
+
 	const preloadedState = {
 		loginState: {
-			loggedIn: req.musicMgr && typeof req.musicMgr.auth_token !== 'undefined',
+			loggedIn: req.musicMgr && typeof req.musicMgr.auth_token !== 'undefined'
+		},
+		dashboardState: {
+			managedPlaylist: req.musicMgr && getManagedPlaylistForUser(req.musicMgr)
 		}
 	};
 	const store = createStore(RootReducer, preloadedState);

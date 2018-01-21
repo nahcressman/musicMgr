@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { receivePlaybackUpdateFromServer } from '../../actions';
+import { receivePlaybackUpdateFromServer, webSocketOpen } from '../../actions';
 
 class PlaylistUpdater extends Component {
 	constructor(props) {
@@ -26,6 +26,7 @@ class PlaylistUpdater extends Component {
 		this.setState({
 			pingInterval: interval
 		});
+
 	}
 
 	onWebSocketMessage(e) {

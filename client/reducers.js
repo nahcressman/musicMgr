@@ -43,7 +43,8 @@ const defaultPlaylistFeaturesState = {
 const defaultDashboardState = {
 	isFetching: false,
 	activePlaylistId: undefined,
-	managedPlaylist: undefined
+	managedPlaylist: undefined,
+	websocket: undefined
 };
 
 function spotifySearchByType(state = defaultSingleSearchTypeState, action) {
@@ -55,7 +56,7 @@ function spotifySearchByType(state = defaultSingleSearchTypeState, action) {
 		case actionCreators.RECEIVE_SPOTIFY_RESULTS:
 			return Object.assign({}, state, {
 				isFetching: false,
-				items: action.results
+				items: action.results.map( (track) => Object.assign(track, {isFetching: false}))
 			});
 		default:
 			return state;
@@ -68,6 +69,20 @@ function spotifySearch(state = {}, action) {
 		case actionCreators.RECEIVE_SPOTIFY_RESULTS:
 			return Object.assign({}, state, {
 				[action.searchType]: spotifySearchByType(state[action.searchType], action)
+			});
+		case actionCreators.SUBMIT_SONG_REQUEST:
+			return Object.assign({}, state, {
+				track: {
+					items: state.track.items.map( (track) => (
+						Object.assign(track, {isFetching: track.uri === action.uri})))
+				}
+			});
+		case actionCreators.COMPLETE_SONG_REQUEST:
+			return Object.assign({}, state, {
+				track: {
+					items: state.track.items.map( (track) => (
+						Object.assign(track, {isRequesting: false})))
+				}
 			});
 		default:
 			return state;
@@ -196,6 +211,10 @@ function dashboardState(state = defaultDashboardState, action) {
 		case actionCreators.RECEIVE_PLAYBACK_UPDATE_FROM_SERVER:
 			return Object.assign({}, state, {
 				managedPlaylist: action.updateData
+			});
+		case actionCreators.WEBSOCKET_OPEN:
+			return Object.assign({}, state, {
+				websocket: action.websocket
 			});
 		default:
 			return state;

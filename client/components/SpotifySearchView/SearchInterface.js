@@ -1,14 +1,50 @@
-import React from 'react';
+import React, {Component} from 'react';
 import SearchForm from './SearchForm';
-import SpotifyResultList from './SearchResultListContainer';
+import PropTypes from 'prop-types';
+import SearchResultListContainer from './SearchResultListContainer';
 
-const SearchInterface = () => (
-	<div>
-		<SearchForm />
-		<SearchResultListContainer type="artist" />
-		<SearchResultListContainer type="album" />
-		<SearchResultListContainer type="track" />
-	</div>
-);
+class SearchInterface extends Component {
+	
+	render() {
+		const {
+			showArtists,
+			showAlbums,
+			showTracks,
+			songSelectHandler
+		} = this.props;
+		
+		return (
+			<div>
+				<SearchForm />
+				{showArtists &&
+					<SearchResultListContainer 
+						type="artist" 
+						songSelectHandler={songSelectHandler}/>}
+				{showAlbums &&
+					<SearchResultListContainer 
+						type="album"
+						songSelectHandler={songSelectHandler}/>}
+				{showTracks &&
+					<SearchResultListContainer
+						type="track"
+						songSelectHandler={songSelectHandler}/>}
+			</div>
+		);
+	}
+}
+
+SearchInterface.defaultProps = {
+	showArtists: false,
+	showAlbums: false,
+	showTracks: false,
+	songSelectHandler: () => {}
+};
+
+SearchInterface.PropTypes = {
+	showArtists: PropTypes.bool,
+	showAlbums: PropTypes.bool,
+	showTracks: PropTypes.bool,
+	songSelectHandler: PropTypes.func
+};
 
 export default SearchInterface;

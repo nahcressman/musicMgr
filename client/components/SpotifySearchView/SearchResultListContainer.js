@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
 import SearchResultList from './SearchResultList';
+import { submitSongRequest, completeSongRequest } from '../../actions';
 
 const getResultsFromState = (resultSet) => resultSet ? resultSet.items : [];
 

@@ -4,6 +4,7 @@ import LoginModule from '../MyContentView/LoginModule';
 import { Link } from 'react-router-dom';
 import PlaybackStatusModule from './PlaybackStatusModule';
 import PlaylistUpdater from '../Common/PlaylistUpdater';
+import AddSongModuleContainer from './AddSongModuleContainer';
 
 class PlaylistManager extends Component {
 	componentDidMount() {
@@ -59,6 +60,8 @@ class PlaylistManager extends Component {
 								upcomingTracks={this.getUpcomingTracks()}
 								currentPlayingTrack={this.getCurrentPlayingTrack()}
 							/>
+
+							<AddSongModuleContainer />
 						</div>
 					) : (
 						<div>
