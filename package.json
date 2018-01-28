@@ -4,8 +4,8 @@
   "description": "",
   "main": "./dist/server/app-server.js",
   "scripts": {
-    "build-server": "babel ./server --out-dir ./dist/server && cp -r ./views ./dist/server",
-    "build-client": "webpack && babel ./client --out-dir ./dist/client",
+    "build-server": "npx babel ./server --out-dir ./dist/server && cp -r ./views ./dist/server",
+    "build-client": "npx webpack && npx babel ./client --out-dir ./dist/client",
     "watch-server": "concurrently \"babel ./server --watch --out-dir ./dist/server\"",
     "watch-client": "concurrently \"webpack --progress --colors --watch\" \"babel ./client --watch --out-dir ./dist/client\"",
     "build": "npm run build-server && npm run build-client",
