@@ -338,6 +338,8 @@ app.get('/*', (req, res) => {
 	});
 });
 
-app.listen(process.env.port || '3000', function() {
-	console.log('Running on port 3000');
+let listenPort = process.env.PORT || '3000';
+
+app.listen(listenPort, function() {
+	console.log(`running on port ${listenPort}`);
 });
