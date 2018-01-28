@@ -1,5 +1,9 @@
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
+const webpack = require('webpack'); //to access built-in plugins
+
+
+require('dotenv').config();
 
 module.exports = {
   context: __dirname,
@@ -17,10 +21,15 @@ module.exports = {
       filename: 'style.css',
       allChunks: true
     }),
+    new webpack.DefinePlugin({
+      HOST_DOMAIN: JSON.stringify(process.env.HOST_DOMAIN)
+    })
   ],
 
   node: {
     fs: 'empty',
+    net: 'empty',
+    tls: 'empty'
   },
   resolve: {
     extensions: ['.js', '.jsx']

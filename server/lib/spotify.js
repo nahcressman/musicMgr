@@ -23,7 +23,8 @@ var ALBUM_TYPE = "album";
 var SPOTIFY_ACCOUNTS_BASE = 'accounts.spotify.com';
 var SPOTIFY_TOKEN_PATH = '/api/token';
 var SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
-var AUTH_REDIRECT_URI = 'http://localhost:3000/loggedIn';
+
+let getAuthRedirectURI = () => `http://${process.env.HOST_DOMAIN}/loggedIn`;
 
 var TRACK_FEATURES = [
 	{
@@ -95,7 +96,7 @@ const Spotify = {
 			form: {
 				grant_type: "authorization_code",
 				code: authCode,
-				redirect_uri: AUTH_REDIRECT_URI,
+				redirect_uri: getAuthRedirectURI(),
 				client_id: process.env.MM_SPOTIFY_CLIENT_ID,
 				client_secret: process.env.MM_SPOTIFY_SECRET
 			}

@@ -11,7 +11,7 @@ class PlaylistUpdater extends Component {
 		this.serverPingIntervalFunc = this.serverPingIntervalFunc.bind(this);
 	}
 	componentDidMount() {
-		let websocket = new WebSocket('ws://localhost:3000/ws/ping');
+		let websocket = new WebSocket('ws://' + HOST_DOMAIN + '/ws/ping');
 		websocket.onopen = this.onWebSocketOpen;
 		websocket.onerror = (e) => { console.log('websocket failed to open')};
 		websocket.onmessage = this.onWebSocketMessage;

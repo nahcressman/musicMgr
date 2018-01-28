@@ -45,7 +45,7 @@ export function doSpotifySearch(searchType, query) {
 		dispatch(requestFromSpotify(searchType, query));
 
 		rp({
-			uri: 'http://localhost:3000/api/searchByType',
+			uri: 'http://' + HOST_DOMAIN + '/api/searchByType',
 			qs: {q: query, searchType: searchType},
 			json: true
 		}).then(response => {
@@ -75,7 +75,7 @@ export function doSpotifyMyContent(contentType) {
 		dispatch(requestMyContent(contentType));
 
 		rp({
-			uri: 'http://localhost:3000/api/getPlaylists',
+			uri: 'http://' + HOST_DOMAIN + '/api/getPlaylists',
 			json: true
 		}).then(response => {
 			dispatch(receiveMyContent(contentType, {
@@ -109,7 +109,7 @@ export function doSpotifyLogout() {
 		dispatch(startSpotifyLogout());
 
 		rp({
-			uri: 'http://localhost:3000/api/logout'
+			uri: 'http://' + HOST_DOMAIN + '/api/logout'
 		}).then(response => {
 			dispatch(confirmSpotifyLogout());
 		})
@@ -160,7 +160,7 @@ export function doFetchPlaylistDetails(playlistId) {
 		dispatch(requestPlaylistFeatures(playlistId));
 
 		rp({
-			uri: 'http://localhost:3000/api/getPlaylistGenres',
+			uri: 'http://' + HOST_DOMAIN + '/api/getPlaylistGenres',
 			qs: {id: playlistId}
 		}).then(response => {
 			dispatch(receivePlaylistGenres(playlistId, JSON.parse(response)));
@@ -172,7 +172,7 @@ export function doFetchPlaylistDetails(playlistId) {
 		});
 
 		rp({
-			uri: 'http://localhost:3000/api/getPlaylistAudioFeatures',
+			uri: 'http://' + HOST_DOMAIN + '/api/getPlaylistAudioFeatures',
 			qs: {id: playlistId}
 		}).then(response => {
 			dispatch(receivePlaylistFeatures(playlistId, JSON.parse(response)));
@@ -235,7 +235,7 @@ export function doFetchManagedPlaylist(playlistId) {
 		dispatch(requestManagedPlaylist());
 
 		rp({
-			uri: 'http://localhost:3000/api/getManagedPlaylist',
+			uri: 'http://' + HOST_DOMAIN + '/api/getManagedPlaylist',
 			qs: {
 				id: playlistId
 			}
@@ -268,7 +268,7 @@ export function doCreateManagedPlaylist(playlistId) {
 		dispatch(requestCreateManagedPlaylist());
 
 		rp({
-			uri: 'http://localhost:3000/api/createManagedPlaylist',
+			uri: 'http://' + HOST_DOMAIN + '/api/createManagedPlaylist',
 		}).then( response => {
 			dispatch(receiveCreateManagedPlaylist(JSON.parse(response)));
 		}).catch( error => {
@@ -314,7 +314,7 @@ export function doSongRequest(playlistId, songURI) {
 		dispatch(submitSongRequest(songURI));
 
 		rp({
-			uri: 'http://localhost:3000/api/songRequest',
+			uri: 'http://' + HOST_DOMAIN + '/api/songRequest',
 			qs: {
 				playlistId: playlistId,
 				songURI: songURI

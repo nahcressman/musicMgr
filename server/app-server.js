@@ -46,6 +46,11 @@ app.use(sessions({
 }));
 
 app.use(function(req,res,next) { 
+	console.log('received request: ');
+	console.log(JSON.stringify({
+		headers: req.headers,
+		originalUrl: req.originalUrl
+	}));
 	if(req.musicMgr &&
 		req.musicMgr.userDetails &&
 		req.musicMgr.expirationTime) {
@@ -104,7 +109,7 @@ app.get('/loggedIn', function(req, res) {
 					console.log('user logged in:');
 					console.log(JSON.stringify(details));
 				}
-				res.redirect('/')
+				res.redirect('/host')
 			});
 		}		
 		else {
@@ -307,12 +312,15 @@ app.use(express.static('dist'));
 app.get('/*', (req, res) => {
 	const context = {};
 
+	console.log(`host domain is ${process.env.HOST_DOMAIN}`);
+
 	const preloadedState = {
 		loginState: {
 			loggedIn: req.musicMgr && typeof req.musicMgr.auth_token !== 'undefined'
 		},
 		dashboardState: {
-			managedPlaylist: req.musicMgr && getManagedPlaylistForUser(req.musicMgr)
+			managedPlaylist: req.musicMgr && getManagedPlaylistForUser(req.musicMgr),
+			hostDomain: process.env.HOST_DOMAIN
 		}
 	};
 	const store = createStore(RootReducer, preloadedState);

@@ -14,7 +14,7 @@ class Dashboard extends Component {
 			<div>
 				{loggedIn ? (
 					<div>
-						<Route path="/dashboard" component={PlaylistManagerContainer} />
+						<PlaylistManagerContainer />
 					</div>
 				) : (
 					<LoginModule />

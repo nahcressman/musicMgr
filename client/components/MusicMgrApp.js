@@ -18,15 +18,15 @@ const MusicMgrApp = () => {
 			<Route exact path="/" render={props => (
 				<div className="home-nav">
 					<div className="nav-section">	
-						<button className="nav-link-container"><Link className="nav-link" to="/dashboard">Host a jukebox</Link></button>
+						<button className="nav-link-container"><Link className="nav-link" to="/host">Host a jukebox</Link></button>
 					</div>
 					<div className="nav-section">
-						<button className="nav-link-container"><Link className="nav-link" to="/participant">Join an existing jukebox</Link></button>
+						<button className="nav-link-container"><Link className="nav-link" to="/join">Join an existing jukebox</Link></button>
 					</div>
 				</div>
 			)} />
-			<Route path="/dashboard" component={DashboardContainer} />
-			<Route path="/participant" component={ParticipantViewContainer} />
+			<Route path="/host" component={DashboardContainer} />
+			<Route path="/join" component={ParticipantViewContainer} />
 		</div>
 	);
 };
