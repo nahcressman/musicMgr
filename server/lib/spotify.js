@@ -24,7 +24,7 @@ var SPOTIFY_ACCOUNTS_BASE = 'accounts.spotify.com';
 var SPOTIFY_TOKEN_PATH = '/api/token';
 var SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
 
-let getAuthRedirectURI = () => `http://${process.env.HOST_DOMAIN}/loggedIn`;
+let getAuthRedirectURI = () => `${process.env.HOST_DOMAIN}loggedIn`;
 
 var TRACK_FEATURES = [
 	{

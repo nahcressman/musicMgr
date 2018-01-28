@@ -26,7 +26,7 @@ class LoginModule extends Component {
 		if(!loggedIn) {
 			return (
 				<div>
-					<a href={`https://accounts.spotify.com/authorize/?client_id=2068662022c74a1697dcc0e4eeacf439&response_type=code&redirect_uri=http://${hostDomain}/loggedIn&scope=playlist-modify-public%20user-read-private%20user-read-playback-state%20playlist-read-collaborative%20playlist-read-private&show_dialog=true`} >
+					<a href={`https://accounts.spotify.com/authorize/?client_id=2068662022c74a1697dcc0e4eeacf439&response_type=code&redirect_uri=${hostDomain}loggedIn&scope=playlist-modify-public%20user-read-private%20user-read-playback-state%20playlist-read-collaborative%20playlist-read-private&show_dialog=true`} >
 					Click here to login to Spotify and view your playlists.
 					</a>
 				</div>

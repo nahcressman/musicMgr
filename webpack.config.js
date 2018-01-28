@@ -22,7 +22,8 @@ module.exports = {
       allChunks: true
     }),
     new webpack.DefinePlugin({
-      HOST_DOMAIN: JSON.stringify(process.env.HOST_DOMAIN)
+      HOST_DOMAIN: JSON.stringify(process.env.HOST_DOMAIN),
+      WEBSOCKET_DOMAIN: JSON.stringify(process.env.WEBSOCKET_DOMAIN)
     })
   ],
 
