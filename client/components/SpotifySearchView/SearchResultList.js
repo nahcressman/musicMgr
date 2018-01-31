@@ -1,12 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-
-const buildTrackName = (track) => {
-	if (track) {
-		return track.artists.map( (artist) => artist.name )
-			.join(', ');
-	}
-}
+import {buildTrackName} from '../../util/track-utils';
+import Track from '../Common/Track';
 
 class SearchResultList extends Component {
 
@@ -30,7 +25,7 @@ class SearchResultList extends Component {
 				<h3>{header}</h3>
 				{results.map(result => 
 					<div key={result.id} onClick={this.generateOnClickHandler(result)}>
-						<span className="track-name">{result.name}</span> - <span className="artists">{buildTrackName(result)}</span>
+						<Track {...(buildTrackName(result))} />
 					</div>
 				)}
 			</div>	

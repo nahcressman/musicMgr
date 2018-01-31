@@ -31,7 +31,7 @@ class PlaylistManager extends Component {
 	getCurrentPlayingTrack() {
 		return this.props.managedPlaylist &&
 			this.props.managedPlaylist.playbackDetails &&
-			this.props.managedPlaylist.playbackDetails.item.name
+			this.props.managedPlaylist.playbackDetails.item
 	}
 
 	render() {
@@ -50,10 +50,11 @@ class PlaylistManager extends Component {
 							<PlaylistUpdater
 								managedPlaylist={managedPlaylist}
 							/>
-							<p>
-								Currently using playlist named {managedPlaylist.spotifyPlaylistDetails.name}.
-								Playlist id: {managedPlaylist.id.slice(0,4).toUpperCase()}
-							</p>
+							<div className="playlist-details content-section">
+								<div>Playlist Owner: {managedPlaylist.spotifyPlaylistDetails.owner.display_name}</div>
+								<div>Playlist id: {managedPlaylist.id.slice(0,4).toUpperCase()}</div>
+								<div className="switch-session-button">Leave Session</div>
+							</div>
 
 							<PlaybackStatusModule 
 								isPlaying={this.getIsPlayingStatus()}

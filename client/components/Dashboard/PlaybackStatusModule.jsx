@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { buildTrackName } from '../../util/track-utils';
+import Track from '../Common/Track';
 
 class PlaybackStatusModule extends Component {
 	
@@ -10,7 +12,9 @@ class PlaybackStatusModule extends Component {
 
 		return upcomingTracks &&
 			upcomingTracks.map( (individualTrack) => (
-				<li key={individualTrack.track.id}>{individualTrack.track.name}</li>
+				<li key={individualTrack.track.id}>
+					<Track {...(buildTrackName(individualTrack.track))} />
+				</li>
 			));
 	}
 
@@ -24,9 +28,12 @@ class PlaybackStatusModule extends Component {
 		return (
 			isPlaying ? 
 				<div>
-					<h3>Current Playing Track: {currentPlayingTrack}</h3>
-					<div>
-						<h3>Upcoming Tracks:</h3>
+					<div className="now-playing content-section">
+						<h3>Now Playing</h3>
+						<Track {...(buildTrackName(currentPlayingTrack))}/>
+					</div>
+					<div className="upcoming-tracks content-section">
+						<h3>Upcoming Tracks</h3>
 						<ul>
 							{this.getUpcomingTracks()}
 						</ul>

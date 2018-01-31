@@ -1,3 +1,6 @@
+$content-section-background: #00DDDD;
+$content-section-lighter: #00DDDD;
+
 * {
 	margin: 0;
 	padding: 0;
@@ -60,22 +63,49 @@ body {
 		}
 	}
 
-	ul {
-		&.playlist-list {
-			list-style-type: none;
-			
-			li.playlist-container {
-				min-height: 44px;
-				list-style-position: outside;
-			}
+	.content-section {
+		margin-bottom: 10px;
+		border-top: 2px solid black;
+		border-bottom: 2px solid black;
 
-			li.playlist-container:nth-child(even) {
-				background: #eee;
-			}
-
-			li.playlist-container:nth-child(odd) {
-				background: #ccc;
-			}
+		& h3 {
+			text-align: center;
+			margin-bottom: 5px;
 		}
 	}
+
+	.upcoming-tracks {
+		li {
+			margin-bottom: 10px;
+		}
+	}
+
+	.track-name {
+		font-weight: bold;
+		font-size: 1em;
+	}
+
+	.artist-name {
+		font-weight: italic;
+		font-size: .75em;
+	}
+
+	// ul {
+	// 	&.playlist-list {
+	// 		list-style-type: none;
+			
+	// 		li.playlist-container {
+	// 			min-height: 44px;
+	// 			list-style-position: outside;
+	// 		}
+
+	// 		li.playlist-container:nth-child(even) {
+	// 			background: #eee;
+	// 		}
+
+	// 		li.playlist-container:nth-child(odd) {
+	// 			background: #ccc;
+	// 		}
+	// 	}
+	// }
 }
