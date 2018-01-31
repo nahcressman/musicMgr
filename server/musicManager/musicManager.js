@@ -220,3 +220,15 @@ export const addSongToPlaylist = (playlistId, songURI) => {
 		return Spotify.addSongToPlaylist(userId, authToken, spotifyPlaylistId, songURI);
 	}
 }
+
+export const getAuthTokenForPlaylist = (playlistId) => {
+	if (!playlistId) {
+		return null;
+	}
+	for (let userIdKey in dataCache) {
+		if(dataCache[userIdKey].id === playlistId) {
+			return authTokens[userIdKey].auth_token;
+		}
+	}
+	return null;
+}

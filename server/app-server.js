@@ -16,7 +16,8 @@ import {
 	createNewPlaylistForUser,
 	registerNewClient,
 	broadcastToClients,
-	addSongToPlaylist } from './musicManager/musicManager';
+	addSongToPlaylist,
+	getAuthTokenForPlaylist } from './musicManager/musicManager';
 import expressWs from 'express-ws';
 
 import dotenv from 'dotenv';
@@ -68,15 +69,17 @@ app.use(function(req,res,next) {
 app.get('/api/searchByType', function(req, res) {
 	var queryText = req.query.q;
 	var searchType = req.query.searchType;
-	if(req.musicMgr && req.musicMgr.auth_token)
+	if(req.musicMgr)
 	{
-		if(queryText) {
-			Spotify.searchByType(queryText, searchType, req.musicMgr.auth_token, function(results) {
+		let auth_token = req.musicMgr.auth_token || getAuthTokenForPlaylist(req.musicMgr.hostPlaylistId);
+		if (!auth_token) {
+			res.status(400).send({"error": "Not authorized, log in or host a playlist"});
+		} else if(queryText) {
+			Spotify.searchByType(queryText, searchType, auth_token, function(results) {
 				console.log("inside callback for /searchByType");
 				sendJSONResult(res, results);
 			});	
-		}
-		else {
+		} else {
 			//res.setHeader("Content-Type", "application/json");
 			res.status(400).send({"error":"no search query specified"});
 			res.send({});
@@ -139,12 +142,6 @@ app.get('/api/logout', function(req, res) {
 		req.musicMgr.reset();
 	}
 	res.status(200).send("");
-});
-app.get('/api/getUserDetails', function(req, res) {
-	console.log("received a request to getUserDetails");
-	if(req.musicMgr) {
-		
-	}
 });
 app.get('/api/getPlaylistGenres', function(req, res) {
 	console.log("received a request to getPlaylistGenres");
@@ -242,14 +239,14 @@ app.get('/api/getManagedPlaylist', function(req, res) {
 	if(req.query.id) {
 		let playlist = getManagedPlaylistById(req.query.id);
 		if (playlist) {
+			req.musicMgr.hostPlaylistId = playlist.id;
 			res.status(200);
 			res.send(playlist);
 		} else {
 			res.status(404);
 			res.send({"error":`Could not find playlist matching id ${req.query.id}`})
 		}
-	}
-	if(req.musicMgr && req.musicMgr.userDetails) {
+	} else if(req.musicMgr && req.musicMgr.userDetails) {
 		res.status(200);
 		res.send(getManagedPlaylistForUser(req.musicMgr));
 	} else {
