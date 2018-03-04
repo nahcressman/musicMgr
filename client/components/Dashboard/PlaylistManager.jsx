@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import PlaybackStatusModule from './PlaybackStatusModule';
 import PlaylistUpdater from '../Common/PlaylistUpdater';
 import AddSongModuleContainer from './AddSongModuleContainer';
+import ExpandableSection from '../Common/ExpandableSection';
 
 class PlaylistManager extends Component {
 	componentDidMount() {
@@ -52,7 +53,7 @@ class PlaylistManager extends Component {
 							/>
 							<div className="playlist-details content-section">
 								<div>Playlist Owner: {managedPlaylist.spotifyPlaylistDetails.owner.display_name}</div>
-								<div>Playlist id: {managedPlaylist.id.slice(0,4).toUpperCase()}</div>
+								<div>Playlist id: {managedPlaylist.id.slice(-4).toUpperCase()}</div>
 								<div className="switch-session-button">Leave Session</div>
 							</div>
 
@@ -61,8 +62,10 @@ class PlaylistManager extends Component {
 								upcomingTracks={this.getUpcomingTracks()}
 								currentPlayingTrack={this.getCurrentPlayingTrack()}
 							/>
-
-							<AddSongModuleContainer />
+							<ExpandableSection 
+								title="Search">
+								<AddSongModuleContainer />
+							</ExpandableSection>
 						</div>
 					) : (
 						<div>

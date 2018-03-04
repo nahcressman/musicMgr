@@ -10,7 +10,8 @@
     "watch-client": "concurrently \"webpack --progress --colors --watch\" \"babel ./client --watch --out-dir ./dist/client\"",
     "build": "npm run build-server && npm run build-client",
     "start": "node ./dist/server/app-server.js",
-    "debug": "node --inspect ./dist/server/app-server.js"
+    "debug": "node --inspect ./dist/server/app-server.js",
+    "restart": "npm run build && npm run start"
   },
   "repository": {
     "type": "git",

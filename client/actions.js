@@ -23,6 +23,7 @@ export const RECEIVE_PLAYBACK_UPDATE_FROM_SERVER = 'RECEIVE_PLAYBACK_UPDATE_FROM
 export const WEBSOCKET_OPEN = 'WEBSOCKET_OPEN';
 export const SUBMIT_SONG_REQUEST = 'SUBMIT_SONG_REQUEST';
 export const COMPLETE_SONG_REQUEST = 'COMPLETE_SONG_REQUEST';
+export const RESET_SESSION_SELECTION_ERRORS = 'RESET_SESSION_SELECTION_ERRORS';
 
 function requestFromSpotify(searchType, query) {
 	return { 
@@ -246,6 +247,11 @@ export function doFetchManagedPlaylist(playlistId) {
 			if(error.statusCode === 401) {
 				dispatch(confirmSpotifyLogout());
 			}
+			if(error.statusCode === 403) {
+				dispatch(receiveManagedPlaylist({
+					error: "SESSION_NOT_ACTIVE"
+				}));
+			}
 		});
 	};
 }
@@ -295,17 +301,17 @@ export function webSocketOpen(websocket) {
 	});
 }
 
-export function submitSongRequest(id) {
+export function submitSongRequest(uri) {
 	return ({
 		type: SUBMIT_SONG_REQUEST,
-		id: id
+		uri: uri
 	});
 }
 
-export function completeSongRequest() {
+export function completeSongRequest(uri) {
 	return ({
 		type: COMPLETE_SONG_REQUEST,
-		id: id
+		uri: uri
 	});
 }
 
@@ -320,9 +326,15 @@ export function doSongRequest(playlistId, songURI) {
 				songURI: songURI
 			}
 		}).then( response => {
-			dispatch(completeSongRequest());
+			dispatch(completeSongRequest(songURI));
 		}).catch( error => {
 			console.log(`doSongRequest error: ${error}`);
 		});
 	}
+}
+
+export function resetSessionSelectionErrors() {
+	return ({
+		type: RESET_SESSION_SELECTION_ERRORS
+	});
 }

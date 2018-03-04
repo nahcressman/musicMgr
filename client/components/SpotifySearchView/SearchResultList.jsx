@@ -21,14 +21,14 @@ class SearchResultList extends Component {
 			songSelectHandler
 		} = this.props;
 		return (
-			<div className="resultSet">
-				<h3>{header}</h3>
+			<ul className="track-list search-result-list">
 				{results.map(result => 
-					<div key={result.id} onClick={this.generateOnClickHandler(result)}>
+					<li className="track-list-item" key={result.id} onClick={this.generateOnClickHandler(result)}>
 						<Track {...(buildTrackName(result))} />
-					</div>
+						<i className={`fas fa-lg ${result.isRequesting ? 'fa-spinner' : 'fa-plus'}`}/>
+					</li>
 				)}
-			</div>	
+			</ul>	
 		);
 	}
 }

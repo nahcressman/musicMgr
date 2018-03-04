@@ -11,7 +11,7 @@ class ParticipantView extends Component {
 		} = this.props;
 
 		return (
-			managedPlaylist ? 
+			managedPlaylist && !managedPlaylist.error ? 
 				<PlaylistManagerContainer /> :
 				<SessionSelectionFormContainer />
 		);

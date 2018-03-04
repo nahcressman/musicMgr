@@ -1,11 +1,15 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import PlaylistManager from './PlaylistManager';
-import { doFetchManagedPlaylist, doCreateManagedPlaylist } from '../../actions';
+import {doFetchManagedPlaylist,
+		doCreateManagedPlaylist,
+		doSpotifyLogout} from '../../actions';
+
 
 const mapDispatchToProps = (dispatch) => ({
 	fetchManagedPlaylist: () => dispatch(doFetchManagedPlaylist()),
-	createManagedPlaylist: () => dispatch(doCreateManagedPlaylist())
+	createManagedPlaylist: () => dispatch(doCreateManagedPlaylist()),
+	logout: () => dispatch(doSpotifyLogout)
 });
 
 const mapStateToProps = (state) => ({

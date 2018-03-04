@@ -16,14 +16,6 @@ class SearchInterface extends Component {
 		return (
 			<div>
 				<SearchForm />
-				{showArtists &&
-					<SearchResultListContainer 
-						type="artist" 
-						songSelectHandler={songSelectHandler}/>}
-				{showAlbums &&
-					<SearchResultListContainer 
-						type="album"
-						songSelectHandler={songSelectHandler}/>}
 				{showTracks &&
 					<SearchResultListContainer
 						type="track"

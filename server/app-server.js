@@ -40,18 +40,21 @@ console.log(process.env)
 
 initializeMusicManager();
 
+let logRequest = (req) => {
+	console.log('received request: ');
+	console.log(JSON.stringify({
+		headers: req.headers,
+		originalUrl: req.originalUrl
+	}));
+}
+
 app.use(sessions({
 	cookieName: 'musicMgr', // cookie name dictates the key name added to the request object 
 	secret: process.env.MM_SESSION_SECRET, // should be a large unguessable string 
 	duration: 24 * 60 * 60 * 1000, // how long the session will stay valid in ms 
 }));
 
-app.use(function(req,res,next) { 
-	console.log('received request: ');
-	console.log(JSON.stringify({
-		headers: req.headers,
-		originalUrl: req.originalUrl
-	}));
+app.use(function(req,res,next) {
 	if(req.musicMgr &&
 		req.musicMgr.userDetails &&
 		req.musicMgr.expirationTime) {
@@ -67,6 +70,7 @@ app.use(function(req,res,next) {
 });
 
 app.get('/api/searchByType', function(req, res) {
+	logRequest(req);
 	var queryText = req.query.q;
 	var searchType = req.query.searchType;
 	if(req.musicMgr)
@@ -91,6 +95,7 @@ app.get('/api/searchByType', function(req, res) {
 	}
 });
 app.get('/loggedIn', function(req, res) {
+	logRequest(req);
 	console.log("received a request to loggedIn");
 	var error = req.query.error;
 	if(error) {
@@ -121,6 +126,7 @@ app.get('/loggedIn', function(req, res) {
 	});
 });
 app.get('/api/getPlaylists', function(req, res) {
+	logRequest(req);
 	console.log("received a request to getPlaylists");
 	if(req.musicMgr && req.musicMgr.auth_token)
 	{
@@ -137,6 +143,7 @@ app.get('/api/getPlaylists', function(req, res) {
 	}
 });
 app.get('/api/logout', function(req, res) {
+	logRequest(req);
 	console.log("received a request to logout");
 	if(req.musicMgr) {
 		req.musicMgr.reset();
@@ -144,6 +151,7 @@ app.get('/api/logout', function(req, res) {
 	res.status(200).send("");
 });
 app.get('/api/getPlaylistGenres', function(req, res) {
+	logRequest(req);
 	console.log("received a request to getPlaylistGenres");
 	if(!req.query.id) {
 		console.log('getPlaylistGenres: no playlist id was provided');
@@ -165,6 +173,7 @@ app.get('/api/getPlaylistGenres', function(req, res) {
 });
 
 app.get('/api/getPlaylistAudioFeatures', function(req, res) {
+	logRequest(req);
 	console.log("received a request to getPlaylistAudioFeatures");
 	if(!req.query.id) {
 		console.log('getPlaylistAudioFeatures: no playlist id was provided');
@@ -186,6 +195,7 @@ app.get('/api/getPlaylistAudioFeatures', function(req, res) {
 });
 
 app.get('/api/setJukeboxPlaylist', function(req, res) {
+	logRequest(req);
 	console.log("received a request to setJukeboxPlaylist");
 	if(!req.query.id) {
 		console.log('setJukeboxPlaylist: no playlist id was provided');
@@ -205,6 +215,7 @@ app.get('/api/setJukeboxPlaylist', function(req, res) {
 });
 
 app.get('/api/getDashboardContent', function(req, res) {
+	logRequest(req);
 	console.log("received a request to getDashboardContent");
 	if(!req.query.id) {
 		console.log('getDashboardContent: no playlist id was provided');
@@ -235,8 +246,15 @@ app.get('/api/getDashboardContent', function(req, res) {
 });
 
 app.get('/api/getManagedPlaylist', function(req, res) {
+	logRequest(req);
 	console.log('Received a request to getManagedPlaylist endpoint');
 	if(req.query.id) {
+		if (!getAuthTokenForPlaylist(req.query.id)) {
+			res.status(403);
+			res.send("error": "Playlist host not logged in");
+			return;
+		}
+		let authToken = getAuthTokenForPlaylist(req.query.id);
 		let playlist = getManagedPlaylistById(req.query.id);
 		if (playlist) {
 			req.musicMgr.hostPlaylistId = playlist.id;
@@ -280,12 +298,14 @@ app.ws('/ws/ping', (ws, req) => {
 });
 
 app.get('/api/broadcast', (req, res) => {
+	logRequest(req);
 	broadcastToClients("sending you a message");
 	res.status(200);
 	res.send({"status":"okay"});
 })
 
 app.get('/api/songRequest', (req, res) => {
+	logRequest(req);
 	console.log('received a request to songRequest');
 	if(!req.query.playlistId) {
 		res.status(400);
@@ -306,21 +326,31 @@ app.get('/api/songRequest', (req, res) => {
 
 app.use(express.static('dist'));
 
+
+let buildReduxState = (req) => {
+	let hostPlaylist = null;
+	if (req.musicMgr &&
+		req.musicMgr.hostPlaylistId &&
+		getAuthTokenForPlaylist(req.musicMgr)) {
+		managedPlaylist = getManagedPlaylistById(req.musicMgr.hostPlaylistId);
+	}
+	return ({
+		loginState: {
+			loggedIn: req.musicMgr && 
+				typeof req.musicMgr.auth_token !== 'undefined'
+		},
+		dashboardState: {
+			managedPlaylist: hostPlaylist ||
+				getManagedPlaylistForUser(req.musicMgr),
+			hostDomain: process.env.HOST_DOMAIN
+		}
+	});
+}
+
 app.get('/*', (req, res) => {
 	const context = {};
 
-	console.log(`host domain is ${process.env.HOST_DOMAIN}`);
-
-	const preloadedState = {
-		loginState: {
-			loggedIn: req.musicMgr && typeof req.musicMgr.auth_token !== 'undefined'
-		},
-		dashboardState: {
-			managedPlaylist: req.musicMgr && getManagedPlaylistForUser(req.musicMgr),
-			hostDomain: process.env.HOST_DOMAIN
-		}
-	};
-	const store = createStore(RootReducer, preloadedState);
+	const store = createStore(RootReducer, buildReduxState(req));
 	const markup = renderToString(
 		<Provider store={store}>
 			<StaticRouter location={req.url} context={context}>

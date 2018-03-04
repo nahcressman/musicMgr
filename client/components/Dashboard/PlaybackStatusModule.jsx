@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { buildTrackName } from '../../util/track-utils';
 import Track from '../Common/Track';
+import ExpandableSection from '../Common/ExpandableSection';
 
 class PlaybackStatusModule extends Component {
 	
@@ -11,8 +12,8 @@ class PlaybackStatusModule extends Component {
 		} = this.props;
 
 		return upcomingTracks &&
-			upcomingTracks.map( (individualTrack) => (
-				<li key={individualTrack.track.id}>
+			upcomingTracks.map( (individualTrack, index) => (
+				<li className="track-list-item" key={`result${index}_${individualTrack.track.id}`}>
 					<Track {...(buildTrackName(individualTrack.track))} />
 				</li>
 			));
@@ -28,16 +29,16 @@ class PlaybackStatusModule extends Component {
 		return (
 			isPlaying ? 
 				<div>
-					<div className="now-playing content-section">
-						<h3>Now Playing</h3>
+					<ExpandableSection
+						title="Now Playing">
 						<Track {...(buildTrackName(currentPlayingTrack))}/>
-					</div>
-					<div className="upcoming-tracks content-section">
-						<h3>Upcoming Tracks</h3>
-						<ul>
+					</ExpandableSection>
+					<ExpandableSection
+						title="Upcoming Tracks">
+						<ul className="track-list upcoming-tracks">
 							{this.getUpcomingTracks()}
 						</ul>
-					</div>
+					</ExpandableSection>
 				</div>
 				:
 				<h3>Jukebox is not currently playing</h3>

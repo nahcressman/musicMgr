@@ -74,7 +74,7 @@ const generateNewPlaylistEntry = (session) => {
 	return createNewPlaylistOnSpotify(session, newIdentifier)
 		.then( (response) => {
 			dataCache[session.userDetails.id] = Object.assign({}, DEFAULT_PLAYLIST, {
-				id: newIdentifier,
+				id: newIdentifier.toUpperCase(),
 				spotifyUserId: session.userDetails.id,
 				spotifyPlaylistDetails: response
 			});
@@ -139,18 +139,20 @@ export const createNewPlaylistForUser = (session) => {
 
 //returns whether or not we are currently managing a playlist for the user
 export const getManagedPlaylistForUser = (session) => {
-	storeAuthTokensFromSession(session);
+	if (session) {
+		storeAuthTokensFromSession(session);
+	}
 
-	return session.userDetails &&
+	return session &&
+			session.userDetails &&
 			dataCache[session.userDetails.id];
-
 };
 
 //checks whether we have a playlist in the cache for a specific id
 export const getManagedPlaylistById = (id) => {
-	if(typeof id === 'string' &&
-		id.length === 4) {
-		return Object.values(dataCache).find( (cacheEntry) => cacheEntry.id.toUpperCase().startsWith(id) );
+	if (typeof id === 'string') {
+		return Object.values(dataCache).find( (cacheEntry) => (
+			cacheEntry.id.slice(-4).toUpperCase() === id.slice(-4).toUpperCase()));
 	}
 }
 
@@ -226,8 +228,9 @@ export const getAuthTokenForPlaylist = (playlistId) => {
 		return null;
 	}
 	for (let userIdKey in dataCache) {
-		if(dataCache[userIdKey].id === playlistId) {
-			return authTokens[userIdKey].auth_token;
+		if(dataCache[userIdKey].id.toUpperCase().endsWith(playlistId)) {
+			return authTokens[userIdKey] && 
+					authTokens[userIdKey].auth_token;
 		}
 	}
 	return null;

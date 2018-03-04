@@ -1,11 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import SessionSelectionForm from './SessionSelectionForm';
-import { doFetchManagedPlaylist, doCreateManagedPlaylist } from '../../actions';
+import {doFetchManagedPlaylist, 
+		doCreateManagedPlaylist,
+		resetSessionSelectionErrors} from '../../actions';
 
 const mapDispatchToProps = (dispatch) => ({
 	fetchManagedPlaylist: (id) => dispatch(doFetchManagedPlaylist(id)),
-	createManagedPlaylist: () => dispatch(doCreateManagedPlaylist())
+	createManagedPlaylist: () => dispatch(doCreateManagedPlaylist()),
+	resetSessionSelectionErrors: () => dispatch(resetSessionSelectionErrors())
 });
 
 const mapStateToProps = (state) => ({

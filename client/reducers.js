@@ -56,7 +56,7 @@ function spotifySearchByType(state = defaultSingleSearchTypeState, action) {
 		case actionCreators.RECEIVE_SPOTIFY_RESULTS:
 			return Object.assign({}, state, {
 				isFetching: false,
-				items: action.results.map( (track) => Object.assign(track, {isFetching: false}))
+				items: action.results.map( (track) => Object.assign(track, {isRequesting: false}))
 			});
 		default:
 			return state;
@@ -74,14 +74,14 @@ function spotifySearch(state = {}, action) {
 			return Object.assign({}, state, {
 				track: {
 					items: state.track.items.map( (track) => (
-						Object.assign(track, {isFetching: track.uri === action.uri})))
+						Object.assign(track, {isRequesting: track.uri === action.uri})))
 				}
 			});
 		case actionCreators.COMPLETE_SONG_REQUEST:
 			return Object.assign({}, state, {
 				track: {
 					items: state.track.items.map( (track) => (
-						Object.assign(track, {isRequesting: false})))
+						Object.assign(track, {isRequesting: track.uri === action.uri ? false : track.isRequesting})))
 				}
 			});
 		default:
@@ -216,6 +216,12 @@ function dashboardState(state = defaultDashboardState, action) {
 			return Object.assign({}, state, {
 				websocket: action.websocket
 			});
+		case actionCreators.RESET_SESSION_SELECTION_ERRORS:
+			if(state.managedPlaylist.error) {
+				return Object.assign({}, state, {
+					managedPlaylist: null
+				});
+			}
 		default:
 			return state;
 	}
