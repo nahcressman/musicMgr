@@ -154,7 +154,7 @@ function playlistGenres(state = defaultPlaylistGenresState, action) {
 		case actionCreators.RECEIVE_PLAYLIST_GENRES:
 			return Object.assign({}, state, {
 				isFetching: false,
-				[action.id]: action.details
+				[action.id]: action.details 
 			});
 		case actionCreators.TOGGLE_GENRE_EXPAND:
 			return Object.assign({}, state, {
@@ -199,6 +199,7 @@ function dashboardState(state = defaultDashboardState, action) {
 			});
 		case actionCreators.REQUEST_MANAGED_PLAYLIST:
 		case actionCreators.REQUEST_CREATE_MANAGED_PLAYLIST:
+		case actionCreators.BEGIN_SET_ACTIVE_PLAYLIST_ID:
 			return Object.assign({}, state, {
 				isFetching: true
 			});
@@ -222,6 +223,11 @@ function dashboardState(state = defaultDashboardState, action) {
 					managedPlaylist: null
 				});
 			}
+		case actionCreators.CONFIRM_SET_ACTIVE_PLAYLIST_ID:
+			return Object.assign({}, state, {
+				activePlaylistId: action.playlistId,
+				isFetching: false
+			});
 		default:
 			return state;
 	}

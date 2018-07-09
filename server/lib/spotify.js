@@ -190,46 +190,30 @@ const Spotify = {
 	},
 
 	getUserPlaylists: (userId, authToken, callback) => {
-	var playlistUrl = SPOTIFY_PLAYLIST_URL.replace('{user_id}', userId).replace('{playlist_id}', '');
+		const playlistUrl = SPOTIFY_PLAYLIST_URL.replace('{user_id}', userId).replace('{playlist_id}', '');
 
-	request({
-		url: playlistUrl,
-		headers: {
-			'Authorization': 'Bearer ' + authToken
-		}},
-		function(error, response, body) {
-			if (!error)
-			{
-				switch (response.statusCode) {
-					case 200:
-						var playlists = JSON.parse(body);
-						var returnList = playlists.items.map(function(playlistItem) {
-							return {
-								id: playlistItem.id,
-								name: playlistItem.name,
-								numTracks: playlistItem.tracks.total
-							}
-						});
-						callback({
-							results: returnList,
-							status: 200
-						});
-						break;
-					default:
-						callback({
-							results: null,
-							status: response.statusCode
-						});
-						break;
-				}
-			}
-			else {
-				callback({
-					results: null,
-					status: 500
-				});
-			}
-		});
+		rp({
+			uri: playlistUrl,
+			headers: {
+				'Authorization': 'Bearer ' + authToken
+			},
+			qs: {
+				limit: 50
+			},
+			json: true
+		}).then( (playlistsResponse) => {
+			const returnList = playlistsResponse.items
+				.filter( (playlist) => playlist.owner.id === userId )
+				.map( (playlistItem) => ({
+					id: playlistItem.id,
+					name: playlistItem.name,
+					numTracks: playlistItem.tracks.total
+				}));
+			callback({
+				results: returnList,
+				status: 200
+			});
+		}).catch(error => ({results: null, status: 500}));
 	},
 
 	getPlaylistAudioFeatures: (userId, playlistId, authToken, callback) => {

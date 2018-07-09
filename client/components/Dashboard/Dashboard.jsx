@@ -11,15 +11,21 @@ class Dashboard extends Component {
 			loggedIn
 		} = this.props;
 		return (
-			<div>
-				{loggedIn ? (
-					<div>
-						<PlaylistManagerContainer />
-					</div>
-				) : (
-					<LoginModule />
-				)}
-			</div>
+			loggedIn ? (
+				<div className="dashboard">
+					<Route 
+						exact
+						path="/host"
+						component={PlaylistManagerContainer}
+					/>
+					<Route
+						path="/host/choose"
+						component={PlaylistPickerContainer}
+					/>
+				</div>
+			) : (
+				<LoginModule />
+			)
 		);
 	}
 }

@@ -24,6 +24,8 @@ export const WEBSOCKET_OPEN = 'WEBSOCKET_OPEN';
 export const SUBMIT_SONG_REQUEST = 'SUBMIT_SONG_REQUEST';
 export const COMPLETE_SONG_REQUEST = 'COMPLETE_SONG_REQUEST';
 export const RESET_SESSION_SELECTION_ERRORS = 'RESET_SESSION_SELECTION_ERRORS';
+export const BEGIN_SET_ACTIVE_PLAYLIST_ID = 'BEGIN_SET_ACTIVE_PLAYLIST_ID';
+export const CONFIRM_SET_ACTIVE_PLAYLIST_ID = 'CONFIRM_SET_ACTIVE_PLAYLIST_ID';
 
 function requestFromSpotify(searchType, query) {
 	return { 
@@ -117,11 +119,34 @@ export function doSpotifyLogout() {
 	}
 }
 
-export function setActivePlaylistId(playlistId) {
+export function startSetActivePlaylistId() {
 	return {
-		type: SET_ACTIVE_PLAYLIST_ID,
-		id: playlistId
+		type: BEGIN_SET_ACTIVE_PLAYLIST_ID
 	};
+};
+
+export function confirmSetActivePlaylistId(playlistId) {
+	return {
+		type: CONFIRM_SET_ACTIVE_PLAYLIST_ID,
+		playlistId: playlistId
+	};
+}
+
+export function doSetActivePlaylistId(playlistId) {
+	return function(dispatch) {
+		dispatch(startSetActivePlaylistId(playlistId));
+
+		rp({
+			uri: HOST_DOMAIN + 'api/setActivePlaylistId',
+			qs: {
+				playlistId: playlistId
+			}
+		}).then(response => {
+			dispatch(confirmSetActivePlaylistId(playlistId));
+		}).catch( () => {
+			dispatch(confirmSetActivePlaylistId(null));
+		})
+	}
 }
 
 export function requestPlaylistGenres(playlistId) {

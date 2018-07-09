@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import PlaylistPicker from './PlaylistPicker';
 import { 
 	doSpotifyMyContent,
+	beginSetActiveJukeboxPlaylist
 } from '../../actions';
 
 const mapDispatchToProps = (dispatch) => ({

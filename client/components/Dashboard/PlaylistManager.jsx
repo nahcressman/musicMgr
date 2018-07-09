@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import LoginModule from '../MyContentView/LoginModule';
-import { Link } from 'react-router-dom';
+import { Link, Route } from 'react-router-dom';
 import PlaybackStatusModule from './PlaybackStatusModule';
 import PlaylistUpdater from '../Common/PlaylistUpdater';
 import AddSongModuleContainer from './AddSongModuleContainer';
 import ExpandableSection from '../Common/ExpandableSection';
+import PlaylistPickerContainer from './PlaylistPickerContainer';
 
 class PlaylistManager extends Component {
 	componentDidMount() {
@@ -39,7 +40,8 @@ class PlaylistManager extends Component {
 		let {
 			managedPlaylist,
 			isFetching,
-			createManagedPlaylist
+			createManagedPlaylist,
+			match
 		} = this.props;
 
 		return (
@@ -70,7 +72,7 @@ class PlaylistManager extends Component {
 					) : (
 						<div>
 							<p>Could not find a playlist being managed by this app.</p>
-							<button onClick={createManagedPlaylist}>Click here to create one</button>	
+							<button className="nav-link-container"><Link className="nav-link" to="/host/choose">Choose from your playlists</Link></button>
 						</div>
 					)
 				)
