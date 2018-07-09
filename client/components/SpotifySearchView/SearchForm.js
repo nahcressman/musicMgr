@@ -31,7 +31,7 @@ class SearchForm extends Component {
 			<form className="search-form">
 				<input id="searchBox" 
 					className="search-input"
-					type="text" 
+					type="search" 
 					ref={node => this.textInput = node}
 					onChange = {this.onInputChange}
 					placeholder="Enter song title or artist name..."/>
